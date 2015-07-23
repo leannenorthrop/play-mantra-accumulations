@@ -17,7 +17,7 @@ resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 resolvers += Resolver.url("fix-sbt-plugin-releases", url("https://dl.bintray.com/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
-resolvers += Resolver.url("fix-sbt-plugin-releases", url("http://dl.bintray.com/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.url("fix-sbt-plugin-releases2", url("http://dl.bintray.com/sbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
 
 resolvers += "Typesafe Releases" at "http://repo.typesafe.com/typesafe/releases"
 
