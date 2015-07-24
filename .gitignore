@@ -33,3 +33,4 @@ dist
 /.cache-main
 /.cache-tests
 .env
+env.sh
