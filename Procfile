@@ -1,2 +1,2 @@
-web: target/universal/stage/bin/mantra-accumulations -Dhttp.port=${PORT} -Dconfig.resource=${PLAY_CONF_FILE}
+web: target/universal/stage/bin/mantra-accumulations -Dhttp.port=${PORT} -Dconfig.resource="application.prod.conf"
 console: target/universal/stage/bin/mantra-accumulations -main scala.tools.nsc.MainGenericRunner -usejavacp

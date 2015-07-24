@@ -32,3 +32,4 @@ dist
 /bin
 /.cache-main
 /.cache-tests
+.env
