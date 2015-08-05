@@ -125,6 +125,20 @@ trait DBTableDefinitions {
     def * = (id, key, value) <> (DBOpenIDAttribute.tupled, DBOpenIDAttribute.unapply)
   }
 
+  case class MantraRow(
+  id: Long,
+  name: String,
+  description: String,
+  imgUrl: String)
+
+  class MantraTable(tag: Tag) extends Table[MantraRow](tag, "mantra") {
+    def id = column[Long]("mantraID", O.AutoInc, O.PrimaryKey)
+    def name = column[String]("name")
+    def description = column[String]("description")
+    def imgUrl = column[String]("image_url")
+    def * = (id, name, description, imgUrl) <> (MantraRow.tupled, MantraRow.unapply)
+  }
+
   // table query definitions
   val slickUsers = TableQuery[Users]
   val slickLoginInfos = TableQuery[LoginInfos]
@@ -134,6 +148,7 @@ trait DBTableDefinitions {
   val slickOAuth2Infos = TableQuery[OAuth2Infos]
   val slickOpenIDInfos = TableQuery[OpenIDInfos]
   val slickOpenIDAttributes = TableQuery[OpenIDAttributes]
+  val slickMantras = TableQuery[MantraTable]
   
   // queries used in multiple places
   def loginInfoQuery(loginInfo: LoginInfo) = 

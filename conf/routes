@@ -4,13 +4,20 @@
 
 # Home page
 GET         /                                controllers.ApplicationController.index
+GET         /home                            controllers.ApplicationController.home
 GET         /signIn                          controllers.ApplicationController.signIn
 GET         /signUp                          controllers.ApplicationController.signUp
 GET         /signOut                         controllers.ApplicationController.signOut
 GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
 POST        /authenticate/credentials        controllers.CredentialsAuthController.authenticate
 POST        /signUp                          controllers.SignUpController.signUp
+GET         /mantra/list                     controllers.MantraController.list
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                    controllers.Assets.at(path="/public", file)
 GET         /webjars/*file                   controllers.WebJarAssets.at(file)
+
+# Mantra Resource
+GET         /mantra                          controllers.MantraController.list
+POST  		/mantra               			 controllers.MantraController.save
+GET			/mantra/:id 					 controllers.MantraController.get(id:Long)

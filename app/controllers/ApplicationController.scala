@@ -10,6 +10,8 @@ import models.User
 import play.api.i18n.MessagesApi
 
 import scala.concurrent.Future
+import play.api._
+import play.api.mvc._
 
 /**
  * The basic application controller.
@@ -29,7 +31,16 @@ class ApplicationController @Inject() (
    *
    * @return The result to display.
    */
-  def index = SecuredAction.async { implicit request =>
+  def index = Action { implicit request =>
+    Ok(views.html.index("Leanne"))
+  }
+
+  /**
+   * Handles the home action.
+   *
+   * @return The result to display.
+   */
+  def home = SecuredAction.async { implicit request =>
     Future.successful(Ok(views.html.home(request.identity)))
   }
 
@@ -40,7 +51,7 @@ class ApplicationController @Inject() (
    */
   def signIn = UserAwareAction.async { implicit request =>
     request.identity match {
-      case Some(user) => Future.successful(Redirect(routes.ApplicationController.index()))
+      case Some(user) => Future.successful(Redirect(routes.ApplicationController.home()))
       case None => Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
     }
   }
@@ -52,7 +63,7 @@ class ApplicationController @Inject() (
    */
   def signUp = UserAwareAction.async { implicit request =>
     request.identity match {
-      case Some(user) => Future.successful(Redirect(routes.ApplicationController.index()))
+      case Some(user) => Future.successful(Redirect(routes.ApplicationController.home()))
       case None => Future.successful(Ok(views.html.signUp(SignUpForm.form)))
     }
   }
@@ -63,7 +74,7 @@ class ApplicationController @Inject() (
    * @return The result to display.
    */
   def signOut = SecuredAction.async { implicit request =>
-    val result = Redirect(routes.ApplicationController.index())
+    val result = Redirect(routes.ApplicationController.home())
     env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))
 
     env.authenticatorService.discard(request.authenticator, result)
