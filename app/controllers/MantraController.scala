@@ -15,14 +15,21 @@ class MantraController @Inject() (mantraService:MantraService) extends Controlle
 	  (JsPath \ "id").write[Option[Long]] and
 	  (JsPath \ "name").write[String] and
 	  (JsPath \ "description").write[String] and
-	  (JsPath \ "imgUrl").write[String]
+	  (JsPath \ "imgUrl").write[String] and
+	  (JsPath \ "year").write[Int] and 
+	  (JsPath \ "month").write[Int] and
+	  (JsPath \ "day").write[Int]
+
 	)(unlift(Mantra.unapply))	
 
 	implicit val mantraReads: Reads[Mantra] = (
 	  (JsPath \ "id").readNullable[Long] and
 	  (JsPath \ "name").read[String](minLength[String](2)) and
 	  (JsPath \ "description").read[String](minLength[String](2)) and
-	  (JsPath \ "imgUrl").read[String](minLength[String](2))
+	  (JsPath \ "imgUrl").read[String](minLength[String](2)) and
+	  (JsPath \ "year").read[Int] and 
+	  (JsPath \ "month").read[Int] and
+	  (JsPath \ "day").read[Int]
 	)(Mantra.apply _)
 
 	def list = Action {

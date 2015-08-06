@@ -12,6 +12,7 @@ import play.api.i18n.MessagesApi
 import scala.concurrent.Future
 import play.api._
 import play.api.mvc._
+import java.util.UUID
 
 /**
  * The basic application controller.
@@ -41,6 +42,7 @@ class ApplicationController @Inject() (
    * @return The result to display.
    */
   def home = SecuredAction.async { implicit request =>
+    println(request.identity)
     Future.successful(Ok(views.html.home(request.identity)))
   }
 
@@ -51,7 +53,7 @@ class ApplicationController @Inject() (
    */
   def signIn = UserAwareAction.async { implicit request =>
     request.identity match {
-      case Some(user) => Future.successful(Redirect(routes.ApplicationController.home()))
+      case Some(user) => Future.successful(Redirect(routes.ApplicationController.get()))
       case None => Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
     }
   }
@@ -79,4 +81,31 @@ class ApplicationController @Inject() (
 
     env.authenticatorService.discard(request.authenticator, result)
   }
+
+  /**
+   * Handles the home action.
+   *
+   * @return The result to display.
+   */
+  def save = SecuredAction.async { implicit securedRequest =>
+      AccumulationForm.form.bindFromRequest.fold(
+        formWithErrors => {
+          Future.successful(BadRequest(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors,socialProviderRegistry)))
+        },
+        accumulationFormData => {
+          val newAccumulation = models.Accumulation(accumulationFormData.year,
+            accumulationFormData.month,
+            accumulationFormData.day,
+            accumulationFormData.count,
+            accumulationFormData.mantraId,
+            UUID.randomUUID())
+          println(newAccumulation)
+          Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry)))
+        }
+      )
+  }  
+
+  def get = UserAwareAction.async { implicit request =>
+    Future.successful(Ok(views.html.accumulation_form(request.identity,AccumulationForm.form, socialProviderRegistry)))
+  }  
 }

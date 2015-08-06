@@ -129,14 +129,22 @@ trait DBTableDefinitions {
   id: Long,
   name: String,
   description: String,
-  imgUrl: String)
+  imgUrl: String,
+  year:Int,
+  month:Int,
+  day:Int,
+  isArchived:Int)
 
   class MantraTable(tag: Tag) extends Table[MantraRow](tag, "mantra") {
     def id = column[Long]("mantraID", O.AutoInc, O.PrimaryKey)
     def name = column[String]("name")
     def description = column[String]("description")
     def imgUrl = column[String]("image_url")
-    def * = (id, name, description, imgUrl) <> (MantraRow.tupled, MantraRow.unapply)
+    def year = column[Int]("year")
+    def month = column[Int]("month")
+    def day = column[Int]("day")
+    def isArchived = column[Int]("is_archived")
+    def * = (id, name, description, imgUrl, year, month, day, isArchived) <> (MantraRow.tupled, MantraRow.unapply)
   }
 
   // table query definitions

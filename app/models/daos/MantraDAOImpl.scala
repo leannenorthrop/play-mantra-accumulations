@@ -20,7 +20,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
   def findAll() = {
     try {
       val f = db.run(slickMantras.result).map(_.map { row =>
-        models.Mantra(Some(row.id), row.name, row.description, row.imgUrl)
+        models.Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
       })
 
       val v = Await.result(f, Duration(1000, MILLISECONDS))
@@ -34,7 +34,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
   def findById(mantraID: Long): Option[models.Mantra] = {
     try {
       val f = db.run(slickMantras.filter(_.id === mantraID).result).map(_.map { row =>
-        models.Mantra(Some(row.id), row.name, row.description, row.imgUrl)
+        models.Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
       })
 
       val v = Await.result(f, Duration(1000, MILLISECONDS))
@@ -48,7 +48,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
   def save(mantra: models.Mantra): Option[models.Mantra] = {
     try {
       val id = if (mantra.id == None) -1 else mantra.id.get
-      val dbMantra = MantraRow(id, mantra.name, mantra.description, mantra.imgUrl)
+      val dbMantra = MantraRow(id, mantra.name, mantra.description, mantra.imgUrl,mantra.year, mantra.month, mantra.day, 0)
       val actions = (for {
         result <- (slickMantras returning slickMantras.map(_.id)).insertOrUpdate(dbMantra)
       } yield result).transactionally

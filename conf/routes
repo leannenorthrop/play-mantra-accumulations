@@ -21,3 +21,7 @@ GET         /webjars/*file                   controllers.WebJarAssets.at(file)
 GET         /mantra                          controllers.MantraController.list
 POST  		/mantra               			 controllers.MantraController.save
 GET			/mantra/:id 					 controllers.MantraController.get(id:Long)
+
+# Accumulations Resource
+POST        /accumulation                    controllers.ApplicationController.save
+GET         /accumulation                    controllers.ApplicationController.get

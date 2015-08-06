@@ -1,9 +1,10 @@
 package models
 
-import play.api.libs.json.{Json, Format}
-
 case class Mantra(
   id: Option[Long],
   name: String,
   description: String,
-  imgUrl: String)
+  imgUrl: String,
+  year:Int,
+  month:Int,
+  day:Int)
