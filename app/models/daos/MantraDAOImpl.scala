@@ -19,7 +19,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
    */
   def findAll() = {
     try {
-      val f = db.run(slickMantras.result).map(_.map { row =>
+      val f = db.run(slickMantras.filter(_.isArchived === 0).result).map(_.map { row =>
         models.Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
       })
 
@@ -33,7 +33,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
 
   def findById(mantraID: Long): Option[models.Mantra] = {
     try {
-      val f = db.run(slickMantras.filter(_.id === mantraID).result).map(_.map { row =>
+      val f = db.run(slickMantras.filter(_.id === mantraID).filter(_.isArchived === 0).result).map(_.map { row =>
         models.Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
       })
 
