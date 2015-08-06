@@ -147,6 +147,29 @@ trait DBTableDefinitions {
     def * = (id, name, description, imgUrl, year, month, day, isArchived) <> (MantraRow.tupled, MantraRow.unapply)
   }
 
+  case class AccumulationRow(
+  id: Long,
+  mantraId: Long,
+  userId: String,
+  gatheringId: Long,
+  count: Long,
+  year:Int,
+  month:Int,
+  day:Int)
+
+  class AccumulationTable(tag: Tag) extends Table[AccumulationRow](tag, "accumulations") {
+    def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    def mantraId = column[Long]("mantra_id")
+    def userId = column[String]("user_id")
+    def gatheringId = column[Long]("gathering_id")
+    def count = column[Long]("count")
+    def year = column[Int]("year")
+    def month = column[Int]("month")
+    def day = column[Int]("day")
+    def * = (id, mantraId, userId, gatheringId, count, year, month, day) <> (AccumulationRow.tupled, AccumulationRow.unapply)
+  }
+
+
   // table query definitions
   val slickUsers = TableQuery[Users]
   val slickLoginInfos = TableQuery[LoginInfos]
@@ -157,6 +180,7 @@ trait DBTableDefinitions {
   val slickOpenIDInfos = TableQuery[OpenIDInfos]
   val slickOpenIDAttributes = TableQuery[OpenIDAttributes]
   val slickMantras = TableQuery[MantraTable]
+  val slickAccumulations = TableQuery[AccumulationTable]
   
   // queries used in multiple places
   def loginInfoQuery(loginInfo: LoginInfo) = 

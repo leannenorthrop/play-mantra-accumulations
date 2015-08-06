@@ -52,6 +52,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
     bind[MantraService].to[MantraServiceImpl]
     bind[MantraDAO].to[MantraDAOImpl]
+    bind[AccumulationService].to[AccumulationServiceImpl]
+    bind[AccumulationDAO].to[AccumulationDAOImpl]    
   }
 
   /**

@@ -13,10 +13,11 @@ object AccumulationForm {
    */
   val form = Form(mapping(
       "year" -> number(min = 2000, max = 3000),
-      "month" -> number(min = 0, max = 11),
-      "day" -> number(min = 0, max = 31),
-      "count" -> longNumber(min = 0),
-      "mantraId" -> longNumber
+      "month" -> number(min = 1, max = 11),
+      "day" -> number(min = 1, max = 31),
+      "count" -> longNumber(min = 1),
+      "mantraId" -> longNumber,
+      "userId" -> text
     )(AccumulationFormData.apply)(AccumulationFormData.unapply)
   )
 
@@ -24,5 +25,6 @@ object AccumulationForm {
     month: Int,
     day: Int,
     count: Long,
-    mantraId: Long)
+    mantraId: Long,
+    userId: String)
 }

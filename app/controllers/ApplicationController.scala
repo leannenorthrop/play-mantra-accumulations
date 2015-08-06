@@ -8,7 +8,7 @@ import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import forms._
 import models.User
 import play.api.i18n.MessagesApi
-
+import models.services.AccumulationService
 import scala.concurrent.Future
 import play.api._
 import play.api.mvc._
@@ -24,7 +24,8 @@ import java.util.UUID
 class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
   val env: Environment[User, CookieAuthenticator],
-  socialProviderRegistry: SocialProviderRegistry)
+  socialProviderRegistry: SocialProviderRegistry,
+  accumulationService: AccumulationService)
   extends Silhouette[User, CookieAuthenticator] {
 
   /**
@@ -32,8 +33,8 @@ class ApplicationController @Inject() (
    *
    * @return The result to display.
    */
-  def index = Action { implicit request =>
-    Ok(views.html.index("Leanne"))
+  def index = UserAwareAction.async { implicit request =>
+    Future.successful(Ok(views.html.home(request.identity)))
   }
 
   /**
@@ -42,8 +43,7 @@ class ApplicationController @Inject() (
    * @return The result to display.
    */
   def home = SecuredAction.async { implicit request =>
-    println(request.identity)
-    Future.successful(Ok(views.html.home(request.identity)))
+    Future.successful(Ok(views.html.home(Some(request.identity))))
   }
 
   /**
@@ -93,19 +93,21 @@ class ApplicationController @Inject() (
           Future.successful(BadRequest(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors,socialProviderRegistry)))
         },
         accumulationFormData => {
-          val newAccumulation = models.Accumulation(accumulationFormData.year,
-            accumulationFormData.month,
-            accumulationFormData.day,
-            accumulationFormData.count,
-            accumulationFormData.mantraId,
-            UUID.randomUUID())
-          println(newAccumulation)
-          Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry)))
+          val acc = accumulationService.findForToday(UUID.fromString(accumulationFormData.userId), -1, accumulationFormData.mantraId)
+          acc.map { entry =>
+            val updatedTotal = entry.count + accumulationFormData.count
+            accumulationService.save(entry.copy(count = updatedTotal))
+            val counts = accumulationService.counts(1)
+            Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, counts)))
+          }.getOrElse {
+            Future.successful(BadRequest("Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
+          }
         }
       )
   }  
 
   def get = UserAwareAction.async { implicit request =>
-    Future.successful(Ok(views.html.accumulation_form(request.identity,AccumulationForm.form, socialProviderRegistry)))
+    val counts = accumulationService.counts(1)
+    Future.successful(Ok(views.html.accumulation_form(request.identity, AccumulationForm.form, socialProviderRegistry, counts)))
   }  
 }
