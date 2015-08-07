@@ -1,20 +1,16 @@
-import org.scalatest._
-import org.scalatestplus.play._
+package models.daos
 
+import org.scalatest._
 import play.api._
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import scala.language.existentials
-import scala.concurrent.duration._
-import scala.concurrent._
-import models.daos._
 
-trait App extends BeforeAndAfterAll { this: Suite =>
-
+trait Database extends BeforeAndAfterAll { this: Suite =>
   val app = FakeApplication()
-  val db : slick.jdbc.JdbcBackend#DatabaseDef = null
+  var db : slick.jdbc.JdbcBackend#DatabaseDef = null
 
   override def beforeAll() {
     Play.start(app)
@@ -30,20 +26,5 @@ trait App extends BeforeAndAfterAll { this: Suite =>
   }
 }
 
-class DatabaseSpec extends FlatSpec with App with MustMatchers with OptionValues {
-    "1" should "be easy" in {
-      val q = new AccumulationDAOImpl().slickAccumulations.length
-      val v = Await.result(db.run(q.result), Duration(1000, MILLISECONDS))
-      v mustBe 1
-    }
-
-    "2" should "b" in {
-      val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
-      import dbConfig.driver.api._
-      val theDB = dbConfig.db 
-
-      val q = new AccumulationDAOImpl().slickAccumulations.length
-      val v = Await.result(db.run(q.result), Duration(1000, MILLISECONDS))
-      v mustBe 1
-    }    
+abstract class DatabaseSpec extends FlatSpec with Database {   
 }
