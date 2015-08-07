@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   filters,
   cache,
   ws,
-  specs2 % Test
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test"
 )
 
 routesGenerator := InjectedRoutesGenerator
@@ -53,3 +54,4 @@ scalacOptions ++= Seq(
   "-Ywarn-numeric-widen" // Warn when numerics are widened.
 )
 
+net.virtualvoid.sbt.graph.Plugin.graphSettings
