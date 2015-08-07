@@ -14,9 +14,13 @@ import models.daos._
 trait App extends BeforeAndAfterAll { this: Suite =>
 
   val app = FakeApplication()
+  val db : slick.jdbc.JdbcBackend#DatabaseDef = null
 
   override def beforeAll() {
     Play.start(app)
+    val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
+    import dbConfig.driver.api._
+    db = dbConfig.db 
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 
@@ -27,13 +31,9 @@ trait App extends BeforeAndAfterAll { this: Suite =>
 }
 
 class DatabaseSpec extends FlatSpec with App with MustMatchers with OptionValues {
-"1" should "be easy" in {
-      val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
-      import dbConfig.driver.api._
-      val theDB = dbConfig.db 
-
+    "1" should "be easy" in {
       val q = new AccumulationDAOImpl().slickAccumulations.length
-      val v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
+      val v = Await.result(db.run(q.result), Duration(1000, MILLISECONDS))
       v mustBe 1
     }
 
@@ -43,7 +43,7 @@ class DatabaseSpec extends FlatSpec with App with MustMatchers with OptionValues
       val theDB = dbConfig.db 
 
       val q = new AccumulationDAOImpl().slickAccumulations.length
-      val v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
+      val v = Await.result(db.run(q.result), Duration(1000, MILLISECONDS))
       v mustBe 1
     }    
 }
