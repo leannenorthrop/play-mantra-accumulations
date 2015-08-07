@@ -7,6 +7,7 @@ import play.api.test.Helpers._
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import scala.language.existentials
+import play.api.db.evolutions._
 
 trait Database extends BeforeAndAfterAll { this: Suite =>
   val app = FakeApplication()
@@ -16,12 +17,15 @@ trait Database extends BeforeAndAfterAll { this: Suite =>
     Play.start(app)
     val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
     import dbConfig.driver.api._
-    db = dbConfig.db 
+    db = dbConfig.db
+    println(db)
+    //Evolutions.applyEvolutions(database) 
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 
   override def afterAll() {
     try super.afterAll() // To be stackable, must call super.afterEach
+    //Evolutions.cleanupEvolutions(database)
     finally Play.stop(app)
   }
 }
