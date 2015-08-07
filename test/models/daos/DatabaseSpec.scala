@@ -9,6 +9,7 @@ import slick.driver.JdbcProfile
 import scala.language.existentials
 import play.api.db.evolutions._
 
+
 trait Database extends BeforeAndAfterAll { this: Suite =>
   val app = FakeApplication()
   var db : slick.jdbc.JdbcBackend#DatabaseDef = null
@@ -18,8 +19,8 @@ trait Database extends BeforeAndAfterAll { this: Suite =>
     val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
     import dbConfig.driver.api._
     db = dbConfig.db
-    println(db)
-    //Evolutions.applyEvolutions(database) 
+
+    //Evolutions.applyEvolutions(db) 
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 

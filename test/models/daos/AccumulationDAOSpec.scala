@@ -10,15 +10,6 @@ import slick.driver.PostgresDriver.api._
 class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues {
     "Accumulation DAO save new Accumulation" should "save return Accumulation with primary key" in {
       
-      new MantraDAOImpl().save(Mantra(
-  Some(2),
-  "hi",
-  "description2",
-  "nothing",
-  2015,
-  8,
-  1))
-
       val dao = new AccumulationDAOImpl()
       val accumulation = Accumulation(None, 2015, 8, 7, 200, 1, java.util.UUID.randomUUID(), -1)
 
