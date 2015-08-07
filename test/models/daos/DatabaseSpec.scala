@@ -12,8 +12,7 @@ import scala.concurrent._
 import models.daos._
 
 class DatabaseSpec extends PlaySpec {
-  "A Stack" must {
-    "pop values in last-in-first-out order" in {
+  def withDatabase(testCode: Db => Any) {
       val app = FakeApplication()
       var v = -1
       try {
@@ -21,12 +20,16 @@ class DatabaseSpec extends PlaySpec {
         val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
         import dbConfig.driver.api._
         val theDB = dbConfig.db 
-        val q = new AccumulationDAOImpl().slickAccumulations.length
-        v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
-
+        testCode(theDB)
       } finally {
         Play.stop(app)
       }
+  }
+
+  "A Stack" must {
+    "pop values in last-in-first-out order" in withDatabase { theDB => 
+      val q = new AccumulationDAOImpl().slickAccumulations.length
+      v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
       v mustBe 1
     }
   }
