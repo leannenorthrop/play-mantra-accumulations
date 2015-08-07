@@ -1,4 +1,4 @@
-import collection.mutable.Stack
+import org.scalatest._
 import org.scalatestplus.play._
 
 import play.api._
@@ -11,27 +11,39 @@ import scala.concurrent.duration._
 import scala.concurrent._
 import models.daos._
 
-class DatabaseSpec extends PlaySpec {
-  def withDatabase(testCode: Db => Any) {
-      val app = FakeApplication()
-      var v = -1
-      try {
-        Play.start(app)
-        val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
-        import dbConfig.driver.api._
-        val theDB = dbConfig.db 
-        testCode(theDB)
-      } finally {
-        Play.stop(app)
-      }
+trait App extends BeforeAndAfterAll { this: Suite =>
+
+  val app = FakeApplication()
+
+  override def beforeAll() {
+    Play.start(app)
+    super.beforeAll() // To be stackable, must call super.beforeEach
   }
 
-  "A Stack" must {
-    "pop values in last-in-first-out order" in withDatabase { theDB => 
+  override def afterAll() {
+    try super.afterAll() // To be stackable, must call super.afterEach
+    finally Play.stop(app)
+  }
+}
+
+class DatabaseSpec extends FlatSpec with App with MustMatchers with OptionValues {
+"1" should "be easy" in {
+      val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
+      import dbConfig.driver.api._
+      val theDB = dbConfig.db 
+
       val q = new AccumulationDAOImpl().slickAccumulations.length
-      v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
+      val v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
       v mustBe 1
     }
-  }
 
+    "2" should "b" in {
+      val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
+      import dbConfig.driver.api._
+      val theDB = dbConfig.db 
+
+      val q = new AccumulationDAOImpl().slickAccumulations.length
+      val v = Await.result(theDB.run(q.result), Duration(1000, MILLISECONDS))
+      v mustBe 1
+    }    
 }
