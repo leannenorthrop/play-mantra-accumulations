@@ -25,7 +25,7 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
       } 
   }
 
-  /*def findForToday(userId: UUID, gatheringId: Long, mantraId: Long): Future[Option[Accumulation]] = {
+  def findForToday(userId: UUID, gatheringId: Long, mantraId: Long): Future[Option[Accumulation]] = {
       val cal = Calendar.getInstance()
       val year = Option(cal.get(Calendar.YEAR))
       val month = Option(cal.get(Calendar.MONTH) + 1)
@@ -39,8 +39,6 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
             day.map(accumulation.day === _),
             month.map(accumulation.month === _),
             year.map(accumulation.year === _),
-            year.map(accumulation.year === _),
-            year.map(accumulation.year === _),
             user.map(accumulation.userId === _),
             gathering.map(accumulation.gatheringId === _),
             mantra.map(accumulation.mantraId === _)
@@ -51,7 +49,7 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
         Some(models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId))
       })    
   }
-
+/*
   def counts(mantraId: Long) : Future[Option[(Long,Long,Long,Long)]] = {
       val q = slickAccumulations.filter(_.mantraId === mantraId)
       val cal = Calendar.getInstance()
