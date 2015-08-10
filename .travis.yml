@@ -1,0 +1,12 @@
+language: scala
+scala:
+  - 2.11.7
+script: "sbt clean coverage test"
+after_success: "sbt coveralls"
+
+jdk:
+  - oraclejdk7
+  - oraclejdk8
+notifications:
+  email:
+    - leanne.northrop@gmail.com

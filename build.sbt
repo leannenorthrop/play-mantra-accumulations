@@ -55,3 +55,15 @@ scalacOptions ++= Seq(
 )
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
+
+ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 95
+
+ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false
+
+ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
+    if(scalaBinaryVersion.value == "2.11") true
+    else false
+}
+
+//Exclude template classes from coverage as template didn't include tests and not concentrating on auth at present
+ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages := ".*Routes*.*;.*Reverse*.*;.*Users.*;.*Infos.*;.*OAuth*.*;.*Open*.*;.*Filters.*;.*ErrorHandler.*;.*SilhouetteModule.*;.*UserService*.*;.*OAuth*DAO.*;.*OpenIDInfoDAO.*;.*PasswordInfoDAO.*;.*UserDAO.*;.*SignIn.*;.*SignUp.*;.*ApplicationController.*;.*CredentialsAuthController.*;.*SocialAuthController.*;"

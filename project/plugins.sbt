@@ -1,10 +1,17 @@
 // Comment to get more information during initialization
 logLevel := Level.Warn
 
+resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
+resolvers += Classpaths.sbtPluginReleases
+
 // The Play plugin
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.2")
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
+
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
+
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
 
 // web plugins
 /*
