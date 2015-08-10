@@ -8,11 +8,17 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile
 import scala.language.existentials
 import play.api.db.evolutions._
+import org.scalatest.concurrent.{ ScalaFutures, Futures, PatienceConfiguration }
+import org.scalatest.time.{ Millis, Seconds, Span }
+import org.scalatest.Tag
 
+object DbTest extends Tag("org.northrop.leanne.play.mantra.tags.DbTest")
 
-trait Database extends BeforeAndAfterAll { this: Suite =>
+trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
   val app = FakeApplication()
   var db : slick.jdbc.JdbcBackend#DatabaseDef = null
+
+  implicit val defaultPatience = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
   override def beforeAll() {
     Play.start(app)
