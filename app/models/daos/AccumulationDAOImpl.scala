@@ -49,7 +49,7 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
         Some(models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId))
       ) recover { case e: java.util.NoSuchElementException => None }    
   }
-/*
+
   def counts(mantraId: Long) : Future[Option[(Long,Long,Long,Long)]] = {
       val q = slickAccumulations.filter(_.mantraId === mantraId)
       val cal = Calendar.getInstance()
@@ -66,6 +66,7 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
       db.run(actions.result)
   }
 
+  /*
   def counts(mantraId: Long, gatheringId: Long) : Future[(Long,Long,Long,Long)] = {
     val q = slickAccumulations.filter(_.mantraId === mantraId).filter(_.gatheringId === gatheringId)
       val cal = Calendar.getInstance()
