@@ -110,5 +110,14 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     		totals._3 shouldBe 6L
     		totals._4 shouldBe 1L
     	}
-    }    
+    }  
+
+    it should "return 0 for all totals if no values" in {
+    	whenReady(dao.counts(mantraId)) { totals =>
+    		totals._1 shouldBe 0L
+    		totals._2 shouldBe 0L
+    		totals._3 shouldBe 0L
+    		totals._4 shouldBe 0L
+    	}    	
+    }  
 }
