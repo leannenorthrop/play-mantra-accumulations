@@ -86,5 +86,29 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     		}
     	}
       }     	
+    }
+
+    "Counts for mantra" should "return sum total for overall, year, month, and day" in {
+    	val cal = Calendar.getInstance()
+      	val year = cal.get(Calendar.YEAR)
+      	val month = cal.get(Calendar.MONTH) + 1
+      	val day = cal.get(Calendar.DAY_OF_MONTH)
+
+    	val dao = new AccumulationDAOImpl()
+    	val mantraId = 1L
+    	for {
+    		_ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), -1))
+    		_ <- dao.save(Accumulation(None, year, month, day+1, 2, mantraId, UUID.randomUUID(), -2))
+    		_ <- dao.save(Accumulation(None, year, month, day+2, 3, mantraId, UUID.randomUUID(), -3))
+    		_ <- dao.save(Accumulation(None, year, month-1, day+3, 4, mantraId, UUID.randomUUID(), -4))
+    		_ <- dao.save(Accumulation(None, year-1, month, day, 5, mantraId, UUID.randomUUID(), -5))
+    	} yield ()
+
+    	whenReady(dao.counts(mantraId)) { totals =>
+    		totals._1 shouldBe 15L
+    		totals._2 shouldBe 10L
+    		totals._3 shouldBe 6L
+    		totals._4 shouldBe 1L
+    	}
     }    
 }
