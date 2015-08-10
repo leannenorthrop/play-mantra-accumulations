@@ -50,25 +50,8 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
       ) recover { case e: java.util.NoSuchElementException => None }    
   }
 
-  def counts(mantraId: Long) : Future[(Long,Long,Long,Long)] = {
-      val q = slickAccumulations.filter(_.mantraId === mantraId)
-      val cal = Calendar.getInstance()
-      val year = cal.get(Calendar.YEAR)
-      val month = cal.get(Calendar.MONTH) + 1
-      val day = cal.get(Calendar.DAY_OF_MONTH)      
-      var actions = for {
-        grandTotal <- q.map(_.count).sum.result
-        yearTotal <- q.filter(_.year === year).map(_.count).sum.result
-        monthTotal <- q.filter(_.year === year).filter(_.month === month).map(_.count).sum.result
-        dayTotal <- q.filter(_.year === year).filter(_.month === month).filter(_.day === day).map(_.count).sum.result
-        } yield (grandTotal,yearTotal,monthTotal,dayTotal)
-      db.run(actions).map { t =>
-        (t._1.getOrElse(0L), t._2.getOrElse(0L), t._3.getOrElse(0L), t._4.getOrElse(0L))
-      }
-  }
-
-  def counts(mantraId: Long, gatheringId: Long) : Future[(Long,Long,Long,Long)] = {
-      val q = slickAccumulations.filter(_.mantraId === mantraId).filter(_.gatheringId === gatheringId)
+  def counts(mantraId: Long)(maybeGatheringId: Option[Long] = None) : Future[(Long,Long,Long,Long)] = {
+      val q = if (maybeGatheringId == None) slickAccumulations.filter(_.mantraId === mantraId) else slickAccumulations.filter(_.mantraId === mantraId).filter(_.gatheringId === maybeGatheringId.get)
       val cal = Calendar.getInstance()
       val year = cal.get(Calendar.YEAR)
       val month = cal.get(Calendar.MONTH) + 1

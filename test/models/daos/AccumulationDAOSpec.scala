@@ -104,7 +104,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     		_ <- dao.save(Accumulation(None, year-1, month, day, 5, mantraId, UUID.randomUUID(), -5))
     	} yield ()
 
-    	whenReady(dao.counts(mantraId)) { totals =>
+    	whenReady(dao.counts(mantraId)(None)) { totals =>
     		totals._1 shouldBe 15L
     		totals._2 shouldBe 10L
     		totals._3 shouldBe 6L
@@ -113,11 +113,48 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     }  
 
     it should "return 0 for all totals if no values" in {
-    	whenReady(dao.counts(mantraId)) { totals =>
+    	val dao = new AccumulationDAOImpl()
+    	whenReady(dao.counts(2378)(None)) { totals =>
     		totals._1 shouldBe 0L
     		totals._2 shouldBe 0L
     		totals._3 shouldBe 0L
     		totals._4 shouldBe 0L
     	}    	
     }  
+
+
+    "Counts for mantra and gathering" should "return sum total for overall, year, month, and day" in {
+    	val cal = Calendar.getInstance()
+      	val year = cal.get(Calendar.YEAR)
+      	val month = cal.get(Calendar.MONTH) + 1
+      	val day = cal.get(Calendar.DAY_OF_MONTH)
+      	val gatheringId = -1L
+    	val dao = new AccumulationDAOImpl()
+    	val mantraId = 1L
+    	for {
+    		_ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), gatheringId))
+    		_ <- dao.save(Accumulation(None, year, month, day+1, 2, mantraId, UUID.randomUUID(), gatheringId))
+    		_ <- dao.save(Accumulation(None, year, month, day+2, 3, mantraId, UUID.randomUUID(), gatheringId))
+    		_ <- dao.save(Accumulation(None, year, month-1, day+3, 4, mantraId, UUID.randomUUID(), gatheringId))
+    		_ <- dao.save(Accumulation(None, year-1, month, day, 5, mantraId, UUID.randomUUID(), gatheringId))
+    		_ <- dao.save(Accumulation(None, year, month, day, 5, mantraId, UUID.randomUUID(), -5L))
+    	} yield ()
+
+    	whenReady(dao.counts(mantraId)(Some(gatheringId))) { totals =>
+    		totals._1 shouldBe 15L
+    		totals._2 shouldBe 10L
+    		totals._3 shouldBe 6L
+    		totals._4 shouldBe 1L
+    	}
+    }  
+
+    it should "return 0 for all totals if no values" in {
+    	val dao = new AccumulationDAOImpl()
+    	whenReady(dao.counts(2378)(Some(-897897))) { totals =>
+    		totals._1 shouldBe 0L
+    		totals._2 shouldBe 0L
+    		totals._3 shouldBe 0L
+    		totals._4 shouldBe 0L
+    	}    	
+    }      
 }

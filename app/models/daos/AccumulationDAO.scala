@@ -10,6 +10,6 @@ import scala.concurrent._
 trait AccumulationDAO {
   def save(accumulation: Accumulation): Future[Option[Accumulation]]
   def findForToday(userId: UUID, gatheringId: Long, mantraId: Long): Future[Option[Accumulation]]
-  def counts(mantraId: Long) : Future[(Long,Long,Long,Long)]
+  def counts(mantraId: Long)(gatheringId: Option[Long]) : Future[(Long,Long,Long,Long)]
   //def counts(mantraId: Long, gatheringId: Long) : Future[(Long,Long,Long,Long)]
 }
