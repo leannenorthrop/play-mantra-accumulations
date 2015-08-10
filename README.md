@@ -1,3 +1,7 @@
+[![Travis Build](https://travis-ci.org/leannenorthrop/play-mantra-accumulations.svg?branch=master)](https://travis-ci.org/leannenorthrop/scala-cart-kata)
+[![Coverage Status](https://coveralls.io/repos/leannenorthrop/play-mantra-accumulations/badge.svg?branch=master&service=github)](https://coveralls.io/github/leannenorthrop/scala-cart-kata?branch=master)
+
+
 # play-mantra-accumulations
 Play based web site for supporting on-line community and individual mantra accumulations.
 
