@@ -45,9 +45,9 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
         ).collect({case Some(criteria)  => criteria}).reduceLeftOption(_ && _).getOrElse(true:Rep[Boolean])
       }
 
-      db.run(query.result).map(_.map { row =>
+      db.run(query.result.head).map( row =>
         Some(models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId))
-      })    
+      ) recover { case e: java.util.NoSuchElementException => None }    
   }
 /*
   def counts(mantraId: Long) : Future[Option[(Long,Long,Long,Long)]] = {
