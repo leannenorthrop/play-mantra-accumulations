@@ -2,6 +2,8 @@ package controllers
 
 import javax.inject.Inject
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent._
 import com.mohiva.play.silhouette.api.{ Environment, LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
@@ -9,7 +11,6 @@ import forms._
 import models.User
 import play.api.i18n.MessagesApi
 import models.services.AccumulationService
-import scala.concurrent.Future
 import play.api._
 import play.api.mvc._
 import java.util.UUID
@@ -93,14 +94,15 @@ class ApplicationController @Inject() (
           Future.successful(BadRequest(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors,socialProviderRegistry)))
         },
         accumulationFormData => {
-          val acc = accumulationService.findForToday(UUID.fromString(accumulationFormData.userId), -1, accumulationFormData.mantraId)
-          acc.map { entry =>
-            val updatedTotal = entry.count + accumulationFormData.count
-            accumulationService.save(entry.copy(count = updatedTotal))
-            val counts = accumulationService.counts(1)
-            Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, counts)))
-          }.getOrElse {
-            Future.successful(BadRequest("Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
+          val uid = UUID.fromString(accumulationFormData.userId)
+          for {
+            acc <- accumulationService.findForToday(uid, -1, accumulationFormData.mantraId)
+            _ <- if (acc == None) accumulationService.save(Accumulation(None, accumulationFormData.year, accumulationFormData.month, accumulationFormData.day, accumulationFormData.count, accumulationFormData.mantraId, UUID.fromString(accumulationFormData.userId), -1)) else accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count))
+            counts <- accumulationService.counts(1)
+          } yield counts map { counts =>
+            Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, counts)))              
+          } recover {
+            case _ : Throwable => Future.successful(InternalServerError())           
           }
         }
       )
