@@ -5,7 +5,7 @@
 
 @main("Silhouette - Home", user) {
     @user.map { u =>
-        @helper.form(action = routes.ApplicationController.save()) {
+        @helper.form(action = routes.AccumulationController.save()) {
           @helper.CSRF.formField
           <input type="hidden" id="year" name="year" value="@Calendar.getInstance().get(Calendar.YEAR)">
           <input type="hidden" id="month" name="month" value="@(Calendar.getInstance().get(Calendar.MONTH)+1)">

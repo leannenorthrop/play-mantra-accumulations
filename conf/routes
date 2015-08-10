@@ -23,5 +23,5 @@ POST  		/mantra               			 controllers.MantraController.save
 GET			/mantra/:id 					 controllers.MantraController.get(id:Long)
 
 # Accumulations Resource
-POST        /accumulation                    controllers.ApplicationController.save
-GET         /accumulation                    controllers.ApplicationController.get
+POST        /accumulation                    controllers.AccumulationController.save
+GET         /accumulation                    controllers.AccumulationController.get

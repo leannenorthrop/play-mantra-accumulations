@@ -8,12 +8,11 @@ import com.mohiva.play.silhouette.api.{ Environment, LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import forms._
-import models.User
+import models._
 import play.api.i18n.MessagesApi
 import models.services.AccumulationService
 import play.api._
 import play.api.mvc._
-import java.util.UUID
 
 /**
  * The basic application controller.
@@ -54,7 +53,7 @@ class ApplicationController @Inject() (
    */
   def signIn = UserAwareAction.async { implicit request =>
     request.identity match {
-      case Some(user) => Future.successful(Redirect(routes.ApplicationController.get()))
+      case Some(user) => Future.successful(Redirect(routes.ApplicationController.home()))
       case None => Future.successful(Ok(views.html.signIn(SignInForm.form, socialProviderRegistry)))
     }
   }
@@ -82,34 +81,4 @@ class ApplicationController @Inject() (
 
     env.authenticatorService.discard(request.authenticator, result)
   }
-
-  /**
-   * Handles the home action.
-   *
-   * @return The result to display.
-   */
-  def save = SecuredAction.async { implicit securedRequest =>
-      AccumulationForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          Future.successful(BadRequest(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors,socialProviderRegistry)))
-        },
-        accumulationFormData => {
-          val uid = UUID.fromString(accumulationFormData.userId)
-          for {
-            acc <- accumulationService.findForToday(uid, -1, accumulationFormData.mantraId)
-            _ <- if (acc == None) accumulationService.save(Accumulation(None, accumulationFormData.year, accumulationFormData.month, accumulationFormData.day, accumulationFormData.count, accumulationFormData.mantraId, UUID.fromString(accumulationFormData.userId), -1)) else accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count))
-            counts <- accumulationService.counts(1)
-          } yield counts map { counts =>
-            Future.successful(Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, counts)))              
-          } recover {
-            case _ : Throwable => Future.successful(InternalServerError())           
-          }
-        }
-      )
-  }  
-
-  def get = UserAwareAction.async { implicit request =>
-    val counts = accumulationService.counts(1)
-    Future.successful(Ok(views.html.accumulation_form(request.identity, AccumulationForm.form, socialProviderRegistry, counts)))
-  }  
 }
