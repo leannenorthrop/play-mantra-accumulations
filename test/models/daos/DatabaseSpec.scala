@@ -4,29 +4,47 @@ import org.scalatest._
 import play.api._
 import play.api.test._
 import play.api.test.Helpers._
-import play.api.db.slick.DatabaseConfigProvider
+import play.api.db.slick._
 import slick.driver.JdbcProfile
 import scala.language.existentials
 import play.api.db.evolutions._
 import org.scalatest.concurrent.{ ScalaFutures, Futures, PatienceConfiguration }
 import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.Tag
+import play.api.db.slick.evolutions._
 
 object DbTest extends Tag("org.northrop.leanne.play.mantra.tags.DbTest")
 
 trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
+  val dbName = "default"
   val app = FakeApplication()
   var db : slick.jdbc.JdbcBackend#DatabaseDef = null
 
   implicit val defaultPatience = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
+  private def playDB(application:Application, dbName : String) : play.api.db.Database = {
+    val slickApiCache = Application.instanceCache[SlickApi]
+    val slickApi = slickApiCache(application)
+    val dbApi = SlickDBApi(slickApi)
+    val playDB = dbApi.database(dbName)
+    playDB
+  }
+
+  private def slickDB(application:Application, dbName : String) : slick.driver.JdbcProfile#Backend#Database = {
+    val dbConfig = DatabaseConfigProvider.get[JdbcProfile](dbName)(app)  
+    import dbConfig.driver.api._
+    val db = dbConfig.db
+    db
+  }  
+
   override def beforeAll() {
     Play.start(app)
-    val dbConfig = DatabaseConfigProvider.get[JdbcProfile]("test")(app)  
-    import dbConfig.driver.api._
-    db = dbConfig.db
+    db = slickDB(app, dbName)
 
-    //Evolutions.applyEvolutions(db) 
+    val playDb = playDB(app, dbName)
+    println("Applying evolutions to " + playDb)
+    Evolutions.applyEvolutions(playDb)
+
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 

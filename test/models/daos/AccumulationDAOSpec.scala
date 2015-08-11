@@ -13,17 +13,18 @@ import java.util.UUID
 import java.util.Calendar
 
 class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues with BeforeAndAfter {
+  var dao :AccumulationDAO = null
+
 	before {
-		Await.result(db.run(sqlu"delete from accumulations"), Duration(1000, MILLISECONDS))
+    dao = new AccumulationDAOImpl()
+		Await.result(db.run(sqlu"delete from accumulations"), Duration(2000, MILLISECONDS))
 	}
 
 	after {
-		//Await.result(db.run(sqlu"delete from accumulations"), Duration(1000, MILLISECONDS))
+		Await.result(db.run(sqlu"delete from accumulations"), Duration(2000, MILLISECONDS))
 	}
 
     "Saving a new non-existant Accumulation" should "save and return Accumulation with the primary key" taggedAs(DbTest) in {
-      
-      val dao = new AccumulationDAOImpl()
       val accumulation = Accumulation(None, 2015, 8, 7, 100, 1, UUID.randomUUID(), -1)
 
       whenReady(dao.save(accumulation)) { updatedAccumulation =>
@@ -34,7 +35,6 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
     "Saving an existing Accumulation" should "save and return Accumulation with the primary key" taggedAs(DbTest) in {
       val uid = UUID.randomUUID()
-      val dao = new AccumulationDAOImpl()
       val accumulation = Accumulation(None, 2015, 8, 7, 200, 1, uid, -1)
 
       whenReady(dao.save(accumulation)) { updatedAccumulation =>
@@ -52,7 +52,6 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
     "Find Accumulation for today" should "return None if no entry exists for today" in {
     	val uid = UUID.randomUUID()
-    	val dao = new AccumulationDAOImpl()
 
     	whenReady(dao.findForToday(uid, -1L, 1L)) { acc =>
     		assert(acc === None)
@@ -68,7 +67,6 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
       val mantraId = 1l
       val gatheringId = -1L
       val count = 200L
-      val dao = new AccumulationDAOImpl()
       val accumulation = Accumulation(None, year, month, day, count, mantraId, uid, gatheringId)
 
       whenReady(dao.save(accumulation)) { a =>
@@ -90,30 +88,31 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
     "Counts for mantra" should "return sum total for overall, year, month, and day" in {
     	val cal = Calendar.getInstance()
-      	val year = cal.get(Calendar.YEAR)
-      	val month = cal.get(Calendar.MONTH) + 1
-      	val day = cal.get(Calendar.DAY_OF_MONTH)
+      val year = cal.get(Calendar.YEAR)
+      val month = cal.get(Calendar.MONTH) + 1
+      val day = cal.get(Calendar.DAY_OF_MONTH)
 
-    	val dao = new AccumulationDAOImpl()
     	val mantraId = 1L
-    	for {
+    	val setup = for {
     		_ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), -1))
     		_ <- dao.save(Accumulation(None, year, month, day+1, 2, mantraId, UUID.randomUUID(), -2))
     		_ <- dao.save(Accumulation(None, year, month, day+2, 3, mantraId, UUID.randomUUID(), -3))
     		_ <- dao.save(Accumulation(None, year, month-1, day+3, 4, mantraId, UUID.randomUUID(), -4))
     		_ <- dao.save(Accumulation(None, year-1, month, day, 5, mantraId, UUID.randomUUID(), -5))
-    	} yield ()
+    	} yield ("done")
 
-    	whenReady(dao.counts(mantraId)(None)) { totals =>
-    		totals._1 shouldBe 15L
-    		totals._2 shouldBe 10L
-    		totals._3 shouldBe 6L
-    		totals._4 shouldBe 1L
-    	}
+      whenReady(setup) { i =>
+      	whenReady(dao.counts(mantraId)(None)) { totals =>
+          println(totals)
+      		totals._1 shouldBe 15L
+      		totals._2 shouldBe 10L
+      		totals._3 shouldBe 6L
+      		totals._4 shouldBe 1L
+      	}
+      }
     }  
 
     it should "return 0 for all totals if no values" in {
-    	val dao = new AccumulationDAOImpl()
     	whenReady(dao.counts(2378)(None)) { totals =>
     		totals._1 shouldBe 0L
     		totals._2 shouldBe 0L
@@ -125,36 +124,37 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
     "Counts for mantra and gathering" should "return sum total for overall, year, month, and day" in {
     	val cal = Calendar.getInstance()
-      	val year = cal.get(Calendar.YEAR)
-      	val month = cal.get(Calendar.MONTH) + 1
-      	val day = cal.get(Calendar.DAY_OF_MONTH)
-      	val gatheringId = -1L
-    	val dao = new AccumulationDAOImpl()
+    	val year = cal.get(Calendar.YEAR)
+    	val month = cal.get(Calendar.MONTH) + 1
+    	val day = cal.get(Calendar.DAY_OF_MONTH)
+    	val gatheringId = -1L
     	val mantraId = 1L
-    	for {
+    	val setup = for {
     		_ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), gatheringId))
     		_ <- dao.save(Accumulation(None, year, month, day+1, 2, mantraId, UUID.randomUUID(), gatheringId))
     		_ <- dao.save(Accumulation(None, year, month, day+2, 3, mantraId, UUID.randomUUID(), gatheringId))
     		_ <- dao.save(Accumulation(None, year, month-1, day+3, 4, mantraId, UUID.randomUUID(), gatheringId))
     		_ <- dao.save(Accumulation(None, year-1, month, day, 5, mantraId, UUID.randomUUID(), gatheringId))
     		_ <- dao.save(Accumulation(None, year, month, day, 5, mantraId, UUID.randomUUID(), -5L))
-    	} yield ()
+    	} yield ("done")
 
-    	whenReady(dao.counts(mantraId)(Some(gatheringId))) { totals =>
-    		totals._1 shouldBe 15L
-    		totals._2 shouldBe 10L
-    		totals._3 shouldBe 6L
-    		totals._4 shouldBe 1L
-    	}
+      whenReady(setup) { _ =>
+        whenReady(dao.counts(mantraId)(Some(gatheringId))) { totals =>
+          println(totals)
+          totals._1 shouldBe 15L
+          totals._2 shouldBe 10L
+          totals._3 shouldBe 6L
+          totals._4 shouldBe 1L
+        }        
+      }
     }  
 
     it should "return 0 for all totals if no values" in {
-    	val dao = new AccumulationDAOImpl()
     	whenReady(dao.counts(2378)(Some(-897897))) { totals =>
     		totals._1 shouldBe 0L
     		totals._2 shouldBe 0L
     		totals._3 shouldBe 0L
     		totals._4 shouldBe 0L
     	}    	
-    }      
+    }  
 }

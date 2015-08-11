@@ -13,14 +13,15 @@ libraryDependencies ++= Seq(
   "net.ceedubs" %% "ficus" % "1.1.2",
   "com.adrianhurt" %% "play-bootstrap3" % "0.4.4-P24",
   "com.mohiva" %% "play-silhouette-testkit" % "3.0.0" % "test",
-  "com.typesafe.play" %% "play-slick" % "1.0.0",
-  "com.typesafe.play" %% "play-slick-evolutions" % "1.0.0",
+  "com.typesafe.play" %% "play-slick" % "1.0.1",
+  "com.typesafe.play" %% "play-slick-evolutions" % "1.0.1",
   "org.postgresql"     %  "postgresql" % "9.4-1201-jdbc41",
   filters,
   cache,
   ws,
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
-  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test"
+  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
+  "com.h2database"  %  "h2" % "1.4.187" % "test"
 )
 
 routesGenerator := InjectedRoutesGenerator
@@ -67,3 +68,5 @@ ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
 
 //Exclude template classes from coverage as template didn't include tests and not concentrating on auth at present
 ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages := ".*Routes*.*;.*Reverse*.*;.*Users.*;.*Infos.*;.*OAuth*.*;.*Open*.*;.*Filters.*;.*ErrorHandler.*;.*SilhouetteModule.*;.*UserService*.*;.*OAuth*DAO.*;.*OpenIDInfoDAO.*;.*PasswordInfoDAO.*;.*UserDAO.*;.*SignIn.*;.*SignUp.*;.*ApplicationController.*;.*CredentialsAuthController.*;.*SocialAuthController.*;"
+
+javaOptions in Test += "-Dconfig.resource=test.conf"

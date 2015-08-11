@@ -136,13 +136,13 @@ trait DBTableDefinitions {
   isArchived:Int)
 
   class MantraTable(tag: Tag) extends Table[MantraRow](tag, "mantra") {
-    def id = column[Long]("mantraID", O.AutoInc, O.PrimaryKey)
+    def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
     def name = column[String]("name")
     def description = column[String]("description")
     def imgUrl = column[String]("image_url")
-    def year = column[Int]("year")
-    def month = column[Int]("month")
-    def day = column[Int]("day")
+    def year = column[Int]("y")
+    def month = column[Int]("m")
+    def day = column[Int]("d")
     def isArchived = column[Int]("is_archived")
     def * = (id, name, description, imgUrl, year, month, day, isArchived) <> (MantraRow.tupled, MantraRow.unapply)
   }
@@ -162,10 +162,10 @@ trait DBTableDefinitions {
     def mantraId = column[Long]("mantra_id")
     def userId = column[String]("user_id")
     def gatheringId = column[Long]("gathering_id")
-    def count = column[Long]("count")
-    def year = column[Int]("year")
-    def month = column[Int]("month")
-    def day = column[Int]("day")
+    def count = column[Long]("amount")
+    def year = column[Int]("y")
+    def month = column[Int]("m")
+    def day = column[Int]("d")
     def * = (id, mantraId, userId, gatheringId, count, year, month, day) <> (AccumulationRow.tupled, AccumulationRow.unapply)
   }
 
