@@ -28,7 +28,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
       val accumulation = Accumulation(None, 2015, 8, 7, 100, 1, UUID.randomUUID(), -1)
 
       whenReady(dao.save(accumulation)) { updatedAccumulation =>
-      	val id : Option[Long] = updatedAccumulation.get.id
+      	val id : Option[Long] = updatedAccumulation.id
       	id.value should be >= 1L
       }
     }	
@@ -38,27 +38,25 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
       val accumulation = Accumulation(None, 2015, 8, 7, 200, 1, uid, -1)
 
       whenReady(dao.save(accumulation)) { updatedAccumulation =>
-      	val id : Option[Long] = updatedAccumulation.get.id
+      	val id : Option[Long] = updatedAccumulation.id
       	val idValue = id.value
 
-      	val accumulation2 = updatedAccumulation.get.copy(count=400)
+      	val accumulation2 = updatedAccumulation.copy(count=400)
       	whenReady(dao.save(accumulation2)) { updatedAccumulation2 =>
-      		val id2 : Option[Long] = updatedAccumulation2.get.id
+      		val id2 : Option[Long] = updatedAccumulation2.id
       		assert(id2.value === idValue)
       	} 
 
       }     
     }
 
-    "Find Accumulation for today" should "return None if no entry exists for today" in {
-    	val uid = UUID.randomUUID()
-
-    	whenReady(dao.findForToday(uid, -1L, 1L)) { acc =>
-    		assert(acc === None)
-    	}
+    "Find Accumulation for today" should "throw java.util.NoSuchElementException if no entry exists for today" taggedAs(DbTest) in {
+      intercept[java.util.NoSuchElementException]{
+        Await.result(dao.findForToday(UUID.randomUUID(), -1L, 1L),Duration(5000, MILLISECONDS))
+      }
     }	
 
-    it should "return Accumulation if exists for today" in {
+    it should "return Accumulation if exists for today" taggedAs(DbTest) in {
    	  val cal = Calendar.getInstance()
       val year = cal.get(Calendar.YEAR)
       val month = cal.get(Calendar.MONTH) + 1
@@ -71,22 +69,18 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
       whenReady(dao.save(accumulation)) { a =>
       	whenReady(dao.findForToday(uid, gatheringId, mantraId)) { acc =>
-    		acc match {
-    			case Some(a) => 
-    				assert(a.year == year)
-    				assert(a.month == month)
-    				assert(a.day == day)
-    				assert(a.count == count)
-    				assert(a.mantraId == mantraId)
-    				assert(a.userId == uid)
-    				assert(a.gatheringId == gatheringId)
-    			case None => fail("Didn't return Accumulation for today")
-    		}
-    	}
+          assert(a.year == year)
+          assert(a.month == month)
+          assert(a.day == day)
+          assert(a.count == count)
+          assert(a.mantraId == mantraId)
+          assert(a.userId == uid)
+          assert(a.gatheringId == gatheringId)
+    	  }
       }     	
     }
 
-    "Counts for mantra" should "return sum total for overall, year, month, and day" in {
+    "Counts for mantra" should "return sum total for overall, year, month, and day" taggedAs(DbTest) in {
     	val cal = Calendar.getInstance()
       val year = cal.get(Calendar.YEAR)
       val month = cal.get(Calendar.MONTH) + 1
@@ -112,7 +106,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
       }
     }  
 
-    it should "return 0 for all totals if no values" in {
+    it should "return 0 for all totals if no values" taggedAs(DbTest) in {
     	whenReady(dao.counts(2378)(None)) { totals =>
     		totals._1 shouldBe 0L
     		totals._2 shouldBe 0L
@@ -122,7 +116,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     }  
 
 
-    "Counts for mantra and gathering" should "return sum total for overall, year, month, and day" in {
+    "Counts for mantra and gathering" should "return sum total for overall, year, month, and day" taggedAs(DbTest) in {
     	val cal = Calendar.getInstance()
     	val year = cal.get(Calendar.YEAR)
     	val month = cal.get(Calendar.MONTH) + 1
@@ -149,7 +143,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
       }
     }  
 
-    it should "return 0 for all totals if no values" in {
+    it should "return 0 for all totals if no values" taggedAs(DbTest) in {
     	whenReady(dao.counts(2378)(Some(-897897))) { totals =>
     		totals._1 shouldBe 0L
     		totals._2 shouldBe 0L

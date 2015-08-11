@@ -24,3 +24,19 @@ val a = new AccumulationDAOImpl().slickAccumulations
 val q = a.length
 Await.result(db.run(q.result), Duration(1000, MILLISECONDS))
 ```
+
+# Play Doc
+https://www.playframework.com/documentation/2.4.2/api/scala/index.html#play.api.Play$
+
+# Slick Doc
+http://slick.typesafe.com/doc/3.0.0/dbio.html
+http://slick.typesafe.com/doc/3.0.0-M1/api/#scala.slick.jdbc.JdbcBackend$SessionDef
+
+# Silhouette Doc
+http://silhouette.mohiva.com/docs/endpoints
+
+# Testing 
+https://www.playframework.com/documentation/2.4.2/ScalaTestingWithScalaTest
+https://www.playframework.com/documentation/2.4.x/ScalaFunctionalTestingWithScalaTest
+https://www.playframework.com/documentation/2.4.2/ScalaTestingWithGuice
+https://www.playframework.com/documentation/2.4.x/ScalaTestingWithDatabases

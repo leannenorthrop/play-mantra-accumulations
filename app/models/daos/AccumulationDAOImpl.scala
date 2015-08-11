@@ -8,10 +8,24 @@ import scala.util.{Try, Success, Failure}
 import java.util.Calendar
 import java.util.UUID
 
+/**
+ * Accumulation Data Access Object implementation using Slick to persist to/from default database.
+ * Provides access to persistence layer for all Accumulation objects.
+ *
+ * @author Leanne Northrop
+ * @since 1.0.0
+ */
 class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
   import driver.api._
 
-  def save(accumulation: Accumulation): Future[Option[Accumulation]] = {
+  /**
+   * Saves given accumulation. If supplied accumulation id is set to None the id field the returned
+   * accumulation will be set after successful save.
+   *
+   * @param accumulation The accumulation to save
+   * @return Updated accumulation with updated id if supplied accumulation id was None
+   */
+  def save(accumulation: Accumulation): Future[Accumulation] = {
       val id = accumulation.id.getOrElse(-1L)
       val dbAccumulationRow = AccumulationRow(id, accumulation.mantraId, accumulation.userId.toString(), accumulation.gatheringId, accumulation.count, accumulation.year, accumulation.month, accumulation.day)
       val actions = (for {
@@ -19,13 +33,21 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
       } yield result).transactionally
       db.run(actions).map{ id => 
         id match {
-          case Some(newId) => Some(accumulation.copy(id=Some(newId))) // Some is returned for insert
-          case None => Some(accumulation) // None is returned for update
+          case Some(newId) => accumulation.copy(id=Some(newId)) // Some is returned for insert
+          case None => accumulation // None is returned for update
         }
       } 
   }
 
-  def findForToday(userId: UUID, gatheringId: Long, mantraId: Long): Future[Option[Accumulation]] = {
+  /**
+   * Finds 'todays' accumulation for specified user, gathering and mantra.
+   *
+   * @param userId UUID of user to find accumulation for
+   * @param gatheringID Gathering id to find accumulation for
+   * @param mantraID Mantra id to find accumulation for
+   * @return Today's accumulation
+   */
+  def findForToday(userId: UUID, gatheringId: Long, mantraId: Long): Future[Accumulation] = {
       val cal = Calendar.getInstance()
       val year = Option(cal.get(Calendar.YEAR))
       val month = Option(cal.get(Calendar.MONTH) + 1)
@@ -46,10 +68,18 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
       }
 
       db.run(query.result.head).map( row =>
-        Some(models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId))
-      ) recover { case e: java.util.NoSuchElementException => None }    
+        models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId)
+      )  
   }
 
+  /**
+   * Return (overall, this year, this month, this day) sum of accumulation ammounts for the
+   * given gathering and mantra.
+   *
+   * @param mantraId Mantra id to find counts for
+   * @param gatheringId If None returns sums for just mantra, if Some returns sums for mantra and gathering
+   * @return Tuple of (grand total, this year, this month, this day) for given mantra or mantra/gathering
+   */
   def counts(mantraId: Long)(maybeGatheringId: Option[Long] = None) : Future[(Long,Long,Long,Long)] = {
       val cal = Calendar.getInstance()
       val year = cal.get(Calendar.YEAR)

@@ -46,7 +46,7 @@ class AccumulationController @Inject() (
           val uid = UUID.fromString(accumulationFormData.userId)
           for {
             acc <- accumulationService.findOrCreateForToday(uid, -1, accumulationFormData.mantraId)
-            _ <- accumulationService.save(acc.get.copy(count = acc.get.count + accumulationFormData.count)) if acc != None
+            _ <- accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count)) if acc != null
           } yield ()
           accumulationService.counts(1).map { c =>
             Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, c))
