@@ -169,6 +169,29 @@ trait DBTableDefinitions {
     def * = (id, mantraId, userId, gatheringId, count, year, month, day) <> (AccumulationRow.tupled, AccumulationRow.unapply)
   }
 
+case class GatheringRow(
+  id: Long,
+  userId: String,
+  name: String,
+  dedication: String,
+  isAchieved: Int,
+  isPrivate: Int,
+  year: Int,
+  month: Int,
+  day: Int)
+
+  class GatheringTable(tag: Tag) extends Table[GatheringRow](tag, "gatherings") {
+    def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
+    def userId = column[String]("user_id")
+    def name = column[String]("name")
+    def dedication = column[String]("dedication")
+    def isAchieved = column[Int]("is_achieved")
+    def isPrivate = column[Int]("is_private")
+    def year = column[Int]("y")
+    def month = column[Int]("m")
+    def day = column[Int]("d")
+    def * = (id, userId, name, dedication, isAchieved, isPrivate, year, month, day) <> (GatheringRow.tupled, GatheringRow.unapply)
+  }
 
   // table query definitions
   val slickUsers = TableQuery[Users]
@@ -181,6 +204,7 @@ trait DBTableDefinitions {
   val slickOpenIDAttributes = TableQuery[OpenIDAttributes]
   val slickMantras = TableQuery[MantraTable]
   val slickAccumulations = TableQuery[AccumulationTable]
+  val gatheringsTable = TableQuery[GatheringTable]
   
   // queries used in multiple places
   def loginInfoQuery(loginInfo: LoginInfo) = 
