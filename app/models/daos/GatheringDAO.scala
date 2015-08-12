@@ -35,4 +35,12 @@ trait GatheringDAO {
    * @return true if exists in persistence layer, false otherwise
    */
   def exists(name: String): Future[Boolean]
+
+  /**
+   * 'Delete' gathering. Subsequent finds will not find given gathering.
+   *
+   * @param gathering The gathering to hide/delete
+   * @return true if successfully archived
+   */
+  def delete(gathering: Gathering): Future[Boolean]
 }

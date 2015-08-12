@@ -94,4 +94,26 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
       }
     }
   }
+
+  "Deleting an existant Gathering" should "set is achieved to 1" taggedAs (DbTest) in {
+    val gathering = Gathering(None, UUID.randomUUID(), "A gathering", "dedicated to all", false, false, 2015, 8, 12)
+
+    whenReady(dao.save(gathering)) { updatedGathering =>
+      whenReady(dao.delete(updatedGathering)) { isDeleted =>
+        isDeleted shouldBe (true)
+      }
+    }
+  }
+
+  it should "not be available in find results" taggedAs (DbTest) in {
+    val gathering = Gathering(None, UUID.randomUUID(), "A gathering", "dedicated to all", false, false, 2015, 8, 12)
+
+    whenReady(dao.save(gathering)) { updatedGathering =>
+      whenReady(dao.delete(updatedGathering)) { isDeleted =>
+        whenReady(dao.find(1)) { found =>
+          found.length shouldBe (0)
+        }
+      }
+    }
+  }
 }

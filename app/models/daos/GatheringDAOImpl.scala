@@ -74,4 +74,30 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
       list.length > 0
     }
   }
+
+  /**
+   * 'Delete' gathering. Subsequent finds will not find given gathering.
+   *
+   * @param gathering The gathering to hide/delete
+   * @return true if successfully archived
+   */
+  def delete(gathering: Gathering): Future[Boolean] = {
+    val id = gathering.id.getOrElse(-1L)
+    val dbRow = GatheringRow(id,
+      gathering.userId.toString(),
+      gathering.name,
+      gathering.dedication,
+      if (gathering.isAchieved) 1 else 0,
+      if (gathering.isPrivate) 1 else 0,
+      1,
+      gathering.year,
+      gathering.month,
+      gathering.day)
+    val actions = (for {
+      result <- (gatheringsTable returning gatheringsTable.map(_.id)).insertOrUpdate(dbRow)
+    } yield result).transactionally
+    db.run(actions).map { id =>
+      true
+    }
+  }
 }
