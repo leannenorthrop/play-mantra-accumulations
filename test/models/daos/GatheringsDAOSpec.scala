@@ -20,6 +20,7 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
     dao = new GatheringDAOImpl()
     goalDAO = new GoalDAOImpl()
     Await.result(db.run(sqlu"delete from gatherings"), Duration(2000, MILLISECONDS))
+    Await.result(db.run(sqlu"delete from goals"), Duration(2000, MILLISECONDS))
   }
 
   after {

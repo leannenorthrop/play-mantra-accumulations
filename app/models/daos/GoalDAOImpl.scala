@@ -24,4 +24,18 @@ class GoalDAOImpl extends GoalDAO with DAOSlick {
     val dbRow = GoalRow(goal.gatheringId, goal.mantraId, goal.goal, if (goal.isAchieved) 1 else 0)
     db.run(goalsTable.insertOrUpdate(dbRow)).map(_ => goal)
   }
+
+  /**
+   * Finds goals for specified gathering.
+   *
+   * @param gatheringId Gathering id to find goals for
+   * @return List of goals
+   */
+  def find(gatheringId: Long): Future[Seq[Goal]] = {
+    db.run(goalsTable.filter(_.gatheringId === gatheringId).result).map {
+      _.map { row =>
+        Goal(row.gatheringId, row.mantraId, row.goal, (row.isAchieved == 1))
+      }
+    }
+  }
 }

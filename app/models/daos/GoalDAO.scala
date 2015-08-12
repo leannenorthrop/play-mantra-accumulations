@@ -18,4 +18,12 @@ trait GoalDAO {
    * @return goal
    */
   def save(goal: Goal): Future[Goal]
+
+  /**
+   * Finds goals for specified gathering.
+   *
+   * @param gatheringId Gathering id to find goals for
+   * @return List of goals
+   */
+  def find(gatheringId: Long): Future[Seq[Goal]]
 }
