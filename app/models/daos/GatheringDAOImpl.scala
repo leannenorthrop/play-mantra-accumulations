@@ -62,4 +62,16 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
       }
     }
   }
+
+  /**
+   * Returns true if gathering with the given name exists, false otherwise.
+   *
+   * @param name Name of gathering to check existence for
+   * @return true if exists in persistence layer, false otherwise
+   */
+  def exists(name: String): Future[Boolean] = {
+    db.run(gatheringsTable.filter(_.name === name).result).map { list =>
+      list.length > 0
+    }
+  }
 }

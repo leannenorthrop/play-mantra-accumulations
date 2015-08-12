@@ -77,4 +77,21 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
       }
     }
   }
+
+  "Exists" should "return false if no gathering exists with given name" taggedAs (DbTest) in {
+    whenReady(dao.exists("jdjaljlj")) { result =>
+      result shouldBe (false)
+    }
+  }
+
+  it should "return true if gathering exists with given name" taggedAs (DbTest) in {
+    val name = "A gathering"
+    val gathering = Gathering(None, UUID.randomUUID(), name, "dedicated to all", false, false, 2015, 8, 12)
+
+    whenReady(dao.save(gathering)) { updatedGathering =>
+      whenReady(dao.exists(name)) { result =>
+        result shouldBe (true)
+      }
+    }
+  }
 }

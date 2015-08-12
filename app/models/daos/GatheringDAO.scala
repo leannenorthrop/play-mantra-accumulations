@@ -27,4 +27,12 @@ trait GatheringDAO {
    * @return List of gatherings
    */
   def find(mantraId: Long): Future[Seq[Gathering]]
+
+  /**
+   * Returns true if gathering with the given name exists, false otherwise.
+   *
+   * @param name Name of gathering to check existence for
+   * @return true if exists in persistence layer, false otherwise
+   */
+  def exists(name: String): Future[Boolean]
 }
