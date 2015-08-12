@@ -3,6 +3,7 @@ package models.daos
 import models.Gathering
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
+import java.util.UUID
 
 /**
  * Gathering Data Access Object implementation using Slick to persist to/from default database.
@@ -40,6 +41,24 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
       id match {
         case Some(newId) => gathering.copy(id = Some(newId)) // Some is returned for insert
         case None => gathering // None is returned for update
+      }
+    }
+  }
+
+  /**
+   * Finds gatherings for specified mantra.
+   *
+   * @param mantraID Mantra id to find gatherings for
+   * @return List of gatherings
+   */
+  def find(mantraId: Long): Future[Seq[Gathering]] = {
+    val join = for {
+      gathering <- gatheringsTable
+      goals <- goalsTable if goals.gatheringId === gathering.id && goals.mantraId === mantraId && gathering.isArchived === 0
+    } yield gathering
+    db.run(join.result).map {
+      _.map { row =>
+        Gathering(Some(row.id), UUID.fromString(row.userId), row.name, row.dedication, (row.isAchieved == 1), (row.isPrivate == 1), row.year, row.month, row.day)
       }
     }
   }

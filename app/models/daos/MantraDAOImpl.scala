@@ -24,7 +24,7 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
   def findAll() = {
     try {
       val f = db.run(slickMantras.filter(_.isArchived === 0).result).map(_.map { row =>
-        models.Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
+        Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
       })
 
       val v = Await.result(f, Duration(1000, MILLISECONDS))

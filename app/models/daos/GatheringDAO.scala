@@ -1,7 +1,6 @@
 package models.daos
 
 import models.Gathering
-import java.util.UUID
 import scala.concurrent.Future
 
 /**
@@ -20,4 +19,12 @@ trait GatheringDAO {
    * @return Updated gathering with updated id if supplied gathering id was None
    */
   def save(gathering: Gathering): Future[Gathering]
+
+  /**
+   * Finds gatherings for specified mantra.
+   *
+   * @param mantraID Mantra id to find gatherings for
+   * @return List of gatherings
+   */
+  def find(mantraId: Long): Future[Seq[Gathering]]
 }

@@ -250,7 +250,7 @@ trait DBTableDefinitions {
     def year = column[Int]("y")
     def month = column[Int]("m")
     def day = column[Int]("d")
-    def * = (id, userId, name, dedication, isAchieved, isPrivate, year, month, day, isArchived) <> (GatheringRow.tupled, GatheringRow.unapply)
+    def * = (id, userId, name, dedication, isAchieved, isPrivate, isArchived, year, month, day) <> (GatheringRow.tupled, GatheringRow.unapply)
   }
 
   /**
@@ -286,7 +286,7 @@ trait DBTableDefinitions {
   val slickMantras = TableQuery[MantraTable]
   val accumulationsTable = TableQuery[AccumulationTable]
   val gatheringsTable = TableQuery[GatheringTable]
-  val goalTable = TableQuery[GoalTable]
+  val goalsTable = TableQuery[GoalTable]
 
   /** queries used in multiple places. From play-slick-postgres seed template.*/
   def loginInfoQuery(loginInfo: LoginInfo) =
