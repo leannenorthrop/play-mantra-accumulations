@@ -30,7 +30,7 @@ class SocialAuthController @Inject() (
   userService: UserService,
   authInfoRepository: AuthInfoRepository,
   socialProviderRegistry: SocialProviderRegistry)
-  extends Silhouette[User, CookieAuthenticator] with Logger {
+    extends Silhouette[User, CookieAuthenticator] with Logger {
 
   /**
    * Authenticates a user against a social provider.

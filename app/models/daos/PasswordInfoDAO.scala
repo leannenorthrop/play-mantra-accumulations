@@ -10,7 +10,7 @@ import scala.concurrent.Future
 /**
  * The DAO to store the password information.
  */
-class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick{
+class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick {
 
   import driver.api._
 
@@ -18,7 +18,7 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick{
     dbLoginInfo <- loginInfoQuery(loginInfo)
     dbPasswordInfo <- slickPasswordInfos if dbPasswordInfo.loginInfoId === dbLoginInfo.id
   } yield dbPasswordInfo
-  
+
   // Use subquery workaround instead of join to get authinfo because slick only supports selecting
   // from a single table for update/delete queries (https://github.com/slick/slick/issues/684).
   protected def passwordInfoSubQuery(loginInfo: LoginInfo) =
@@ -29,12 +29,12 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick{
       slickPasswordInfos +=
         DBPasswordInfo(authInfo.hasher, authInfo.password, authInfo.salt, dbLoginInfo.id.get)
     }.transactionally
-    
+
   protected def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo) =
     passwordInfoSubQuery(loginInfo).
       map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt)).
       update((authInfo.hasher, authInfo.password, authInfo.salt))
-  
+
   /**
    * Finds the auth info which is linked with the specified login info.
    *
@@ -43,7 +43,7 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick{
    */
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     db.run(passwordInfoQuery(loginInfo).result.headOption).map { dbPasswordInfoOption =>
-      dbPasswordInfoOption.map(dbPasswordInfo => 
+      dbPasswordInfoOption.map(dbPasswordInfo =>
         PasswordInfo(dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt))
     }
   }
@@ -65,7 +65,7 @@ class PasswordInfoDAO extends DelegableAuthInfoDAO[PasswordInfo] with DAOSlick{
    * @param authInfo The auth info to update.
    * @return The updated auth info.
    */
-  def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = 
+  def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(updateAction(loginInfo, authInfo)).map(_ => authInfo)
 
   /**

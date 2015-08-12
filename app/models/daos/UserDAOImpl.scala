@@ -75,7 +75,7 @@ class UserDAOImpl extends UserDAO with DAOSlick {
     val loginInfoAction = {
       val retrieveLoginInfo = slickLoginInfos.filter(
         info => info.providerID === user.loginInfo.providerID &&
-        info.providerKey === user.loginInfo.providerKey).result.headOption
+          info.providerKey === user.loginInfo.providerKey).result.headOption
       val insertLoginInfo = slickLoginInfos.returning(slickLoginInfos.map(_.id)).
         into((info, id) => info.copy(id = Some(id))) += dbLoginInfo
       for {

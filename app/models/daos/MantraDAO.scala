@@ -3,7 +3,11 @@ package models.daos
 import models.Mantra
 
 /**
- * Give access to the mantra object.
+ * Mantra Data Access Object.
+ * Provides access to persistence layer for all Mantra objects.
+ *
+ * @author Leanne Northrop
+ * @since 1.0.0
  */
 trait MantraDAO {
   /**

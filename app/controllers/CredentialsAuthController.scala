@@ -44,7 +44,7 @@ class CredentialsAuthController @Inject() (
   socialProviderRegistry: SocialProviderRegistry,
   configuration: Configuration,
   clock: Clock)
-  extends Silhouette[User, CookieAuthenticator] {
+    extends Silhouette[User, CookieAuthenticator] {
 
   /**
    * Authenticates a user against the credentials provider.

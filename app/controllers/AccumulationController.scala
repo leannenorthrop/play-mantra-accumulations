@@ -8,7 +8,7 @@ import com.mohiva.play.silhouette.api.{ Environment, LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import forms.AccumulationForm
-import models.{Accumulation, User}
+import models.{ Accumulation, User }
 import play.api.i18n.MessagesApi
 import models.services.AccumulationService
 import play.api._
@@ -27,41 +27,41 @@ class AccumulationController @Inject() (
   val env: Environment[User, CookieAuthenticator],
   socialProviderRegistry: SocialProviderRegistry,
   accumulationService: AccumulationService)
-  extends Silhouette[User, CookieAuthenticator] {
+    extends Silhouette[User, CookieAuthenticator] {
   /**
    * Handles the home action.
    *
    * @return The result to display.
    */
   def save = SecuredAction.async { implicit securedRequest =>
-      AccumulationForm.form.bindFromRequest.fold(
-        formWithErrors => {
-          accumulationService.counts(1).map { c =>
-            Ok(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors, socialProviderRegistry, c))
-          } recover {
-            case e : Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity),formWithErrors, socialProviderRegistry, (0L,0L,0L,0L)))
-          }
-        },
-        accumulationFormData => {
-          val uid = UUID.fromString(accumulationFormData.userId)
-          for {
-            acc <- accumulationService.findOrCreateForToday(uid, -1, accumulationFormData.mantraId)
-            _ <- accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count)) if acc != null
-          } yield ()
-          accumulationService.counts(1).map { c =>
-            Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, c))
-          } recover {
-            case e : Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity),AccumulationForm.form, socialProviderRegistry, (0L,0L,0L,0L)))
-          }
+    AccumulationForm.form.bindFromRequest.fold(
+      formWithErrors => {
+        accumulationService.counts(1).map { c =>
+          Ok(views.html.accumulation_form(Some(securedRequest.identity), formWithErrors, socialProviderRegistry, c))
+        } recover {
+          case e: Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), formWithErrors, socialProviderRegistry, (0L, 0L, 0L, 0L)))
         }
-      )
-  }  
+      },
+      accumulationFormData => {
+        val uid = UUID.fromString(accumulationFormData.userId)
+        for {
+          acc <- accumulationService.findOrCreateForToday(uid, -1, accumulationFormData.mantraId)
+          _ <- accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count)) if acc != null
+        } yield ()
+        accumulationService.counts(1).map { c =>
+          Ok(views.html.accumulation_form(Some(securedRequest.identity), AccumulationForm.form, socialProviderRegistry, c))
+        } recover {
+          case e: Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), AccumulationForm.form, socialProviderRegistry, (0L, 0L, 0L, 0L)))
+        }
+      }
+    )
+  }
 
   def get = UserAwareAction.async { implicit request =>
     accumulationService.counts(1).map { counts =>
-      Ok(views.html.accumulation_form(request.identity,AccumulationForm.form, socialProviderRegistry, counts))
+      Ok(views.html.accumulation_form(request.identity, AccumulationForm.form, socialProviderRegistry, counts))
     } recover {
-      case _ : Throwable => Ok(views.html.accumulation_form(request.identity,AccumulationForm.form, socialProviderRegistry, (0L,0L,0L,0L)))
-    }    
-  }  
+      case _: Throwable => Ok(views.html.accumulation_form(request.identity, AccumulationForm.form, socialProviderRegistry, (0L, 0L, 0L, 0L)))
+    }
+  }
 }

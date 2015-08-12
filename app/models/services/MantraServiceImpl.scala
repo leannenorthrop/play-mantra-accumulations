@@ -9,7 +9,7 @@ import models.daos.MantraDAO
  *
  * @param userDAO The user DAO implementation.
  */
-class MantraServiceImpl @Inject() (mantraDao:MantraDAO) extends MantraService {
+class MantraServiceImpl @Inject() (mantraDao: MantraDAO) extends MantraService {
   /**
    * Saves a mantra.
    *
@@ -20,5 +20,5 @@ class MantraServiceImpl @Inject() (mantraDao:MantraDAO) extends MantraService {
 
   def findAll(): List[Mantra] = mantraDao.findAll()
 
-  def find(id:Long): Option[Mantra] = mantraDao.findById(id)
+  def find(id: Long): Option[Mantra] = mantraDao.findById(id)
 }

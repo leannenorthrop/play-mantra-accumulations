@@ -39,5 +39,5 @@ trait AccumulationDAO {
    * @param gatheringId If None returns sums for just mantra, if Some returns sums for mantra and gathering
    * @return Tuple of (grand total, this year, this month, this day) for given mantra or mantra/gathering
    */
-  def counts(mantraId: Long)(gatheringId: Option[Long]) : Future[(Long,Long,Long,Long)]
+  def counts(mantraId: Long)(gatheringId: Option[Long]): Future[(Long, Long, Long, Long)]
 }

@@ -9,11 +9,17 @@ CREATE INDEX acc_mantra_year_index ON accumulations (y);
 CREATE INDEX acc_mantra_month_index ON accumulations (m);
 CREATE INDEX acc_mantra_day_index ON accumulations (d);
 
-create table "gatherings" ("id" BIGSERIAL NOT NULL PRIMARY KEY, user_id VARCHAR NOT NULL, "name" VARCHAR UNIQUE NOT NULL, "dedication" TEXT NOT NULL, is_achieved INT NOT NULL, is_private INT NOT NULL, y INT NOT NULL, m INT NOT NULL, d INT NOT NULL);
+create table "gatherings" ("id" BIGSERIAL NOT NULL PRIMARY KEY, user_id VARCHAR NOT NULL, "name" VARCHAR UNIQUE NOT NULL, "dedication" TEXT NOT NULL, is_achieved INT NOT NULL, is_private INT NOT NULL, is_archived INT NOT NULL, y INT NOT NULL, m INT NOT NULL, d INT NOT NULL);
 CREATE INDEX gatherings_user_index ON gatherings (user_id);
+
+create table "goals" ("gathering_id" BIGINT NOT NULL, "mantra_id" BIGINT NOT NULL, "goal" INT NOT NULL, is_achieved INT NOT NULL, PRIMARY KEY(gathering_id, mantra_id));
+CREATE INDEX goals_gathering_id_index ON goals (gathering_id);
+CREATE INDEX goals_mantra_id_index ON goals (mantra_id);	
+
 
 # --- !Downs
 
 drop table "accumulations";
 drop table "mantra";
 drop table "gatherings";
+drop table "goals";

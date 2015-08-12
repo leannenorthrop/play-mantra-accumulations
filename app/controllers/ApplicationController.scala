@@ -26,7 +26,7 @@ class ApplicationController @Inject() (
   val env: Environment[User, CookieAuthenticator],
   socialProviderRegistry: SocialProviderRegistry,
   accumulationService: AccumulationService)
-  extends Silhouette[User, CookieAuthenticator] {
+    extends Silhouette[User, CookieAuthenticator] {
 
   /**
    * Handles the index action.

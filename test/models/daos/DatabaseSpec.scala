@@ -18,11 +18,11 @@ object DbTest extends Tag("org.northrop.leanne.play.mantra.tags.DbTest")
 trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
   val dbName = "default"
   val app = FakeApplication()
-  var db : slick.jdbc.JdbcBackend#DatabaseDef = null
+  var db: slick.jdbc.JdbcBackend#DatabaseDef = null
 
   implicit val defaultPatience = PatienceConfig(timeout = Span(2, Seconds), interval = Span(5, Millis))
 
-  private def playDB(application:Application, dbName : String) : play.api.db.Database = {
+  private def playDB(application: Application, dbName: String): play.api.db.Database = {
     val slickApiCache = Application.instanceCache[SlickApi]
     val slickApi = slickApiCache(application)
     val dbApi = SlickDBApi(slickApi)
@@ -30,12 +30,12 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
     playDB
   }
 
-  private def slickDB(application:Application, dbName : String) : slick.driver.JdbcProfile#Backend#Database = {
-    val dbConfig = DatabaseConfigProvider.get[JdbcProfile](dbName)(app)  
+  private def slickDB(application: Application, dbName: String): slick.driver.JdbcProfile#Backend#Database = {
+    val dbConfig = DatabaseConfigProvider.get[JdbcProfile](dbName)(app)
     import dbConfig.driver.api._
     val db = dbConfig.db
     db
-  }  
+  }
 
   override def beforeAll() {
     Play.start(app)
@@ -55,5 +55,5 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
   }
 }
 
-abstract class DatabaseSpec extends FlatSpec with Database {   
+abstract class DatabaseSpec extends FlatSpec with Database {
 }

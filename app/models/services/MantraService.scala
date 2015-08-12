@@ -17,5 +17,5 @@ trait MantraService {
 
   def findAll(): List[Mantra]
 
-  def find(id:Long): Option[Mantra]
+  def find(id: Long): Option[Mantra]
 }

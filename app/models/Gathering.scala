@@ -3,8 +3,8 @@ package models
 import java.util.UUID
 
 /**
- * Class representing a gathering which is used to describe a collection 
- * of mantra accumulations with targets. 
+ * Class representing a gathering which is used to describe a collection
+ * of mantra accumulations with targets.
  *
  * @constructor Create a new Gathering
  *
@@ -19,13 +19,4 @@ import java.util.UUID
  * @param month Month created
  * @param day Day created
  */
-case class Gathering(
-  id: Option[Long],
-  userId: UUID,
-  name:String,
-  dedication:String,
-  isAchieved:Boolean,
-  isPrivate:Boolean,
-  year: Int,
-  month: Int,
-  day: Int)
+case class Gathering(id: Option[Long], userId: UUID, name: String, dedication: String, isAchieved: Boolean, isPrivate: Boolean, year: Int, month: Int, day: Int)

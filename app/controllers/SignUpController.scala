@@ -35,7 +35,7 @@ class SignUpController @Inject() (
   authInfoRepository: AuthInfoRepository,
   avatarService: AvatarService,
   passwordHasher: PasswordHasher)
-  extends Silhouette[User, CookieAuthenticator] {
+    extends Silhouette[User, CookieAuthenticator] {
 
   /**
    * Registers a new user.

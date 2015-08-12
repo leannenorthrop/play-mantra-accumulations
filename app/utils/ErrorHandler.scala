@@ -21,8 +21,8 @@ class ErrorHandler @Inject() (
   config: Configuration,
   sourceMapper: OptionalSourceMapper,
   router: javax.inject.Provider[Router])
-  extends DefaultHttpErrorHandler(env, config, sourceMapper, router)
-  with SecuredErrorHandler {
+    extends DefaultHttpErrorHandler(env, config, sourceMapper, router)
+    with SecuredErrorHandler {
 
   /**
    * Called when a user is not authenticated.

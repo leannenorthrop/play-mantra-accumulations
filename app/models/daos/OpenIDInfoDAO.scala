@@ -30,7 +30,7 @@ class OpenIDInfoDAO extends DelegableAuthInfoDAO[OpenIDInfo] with DAOSlick {
   protected def updateAction(loginInfo: LoginInfo, authInfo: OpenIDInfo) =
     openIDInfoQuery(loginInfo).result.head.flatMap { dbOpenIDInfo =>
       DBIO.seq(
-        slickOpenIDInfos filter(_.id === dbOpenIDInfo.id) update dbOpenIDInfo.copy(id = authInfo.id),
+        slickOpenIDInfos filter (_.id === dbOpenIDInfo.id) update dbOpenIDInfo.copy(id = authInfo.id),
         slickOpenIDAttributes.filter(_.id === dbOpenIDInfo.id).delete,
         slickOpenIDAttributes ++= authInfo.attributes.map {
           case (key, value) => DBOpenIDAttribute(authInfo.id, key, value)
@@ -89,7 +89,7 @@ class OpenIDInfoDAO extends DelegableAuthInfoDAO[OpenIDInfo] with DAOSlick {
     val query = loginInfoQuery(loginInfo).joinLeft(slickOpenIDInfos).on(_.id === _.loginInfoId)
     val action = query.result.head.flatMap {
       case (dbLoginInfo, Some(dbOpenIDInfo)) => updateAction(loginInfo, authInfo)
-      case (dbLoginInfo, None)               => addAction(loginInfo, authInfo)
+      case (dbLoginInfo, None) => addAction(loginInfo, authInfo)
     }
     db.run(action).map(_ => authInfo)
   }

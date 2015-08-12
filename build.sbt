@@ -70,3 +70,5 @@ ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := {
 ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages := ".*Routes*.*;.*Reverse*.*;.*Users.*;.*Infos.*;.*OAuth*.*;.*Open*.*;.*Filters.*;.*ErrorHandler.*;.*SilhouetteModule.*;.*UserService*.*;.*OAuth*DAO.*;.*OpenIDInfoDAO.*;.*PasswordInfoDAO.*;.*UserDAO.*;.*SignIn.*;.*SignUp.*;.*ApplicationController.*;.*CredentialsAuthController.*;.*SocialAuthController.*;"
 
 javaOptions in Test += "-Dconfig.resource=test.conf"
+
+scalariformSettings
