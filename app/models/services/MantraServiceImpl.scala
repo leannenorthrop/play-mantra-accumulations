@@ -3,6 +3,7 @@ package models.services
 import models.Mantra
 import javax.inject._
 import models.daos.MantraDAO
+import scala.concurrent.Future
 
 /**
  * Handles actions to users.
@@ -16,9 +17,9 @@ class MantraServiceImpl @Inject() (mantraDao: MantraDAO) extends MantraService {
    * @param mantra The mantra to save.
    * @return The saved mantra.
    */
-  def save(mantra: Mantra): Option[Mantra] = mantraDao.save(mantra)
+  def save(mantra: Mantra): Future[Mantra] = mantraDao.save(mantra)
 
-  def findAll(): List[Mantra] = mantraDao.findAll()
+  def findAll(): Future[Seq[Mantra]] = mantraDao.findAll()
 
-  def find(id: Long): Option[Mantra] = mantraDao.findById(id)
+  def find(id: Long): Future[Mantra] = mantraDao.findById(id)
 }

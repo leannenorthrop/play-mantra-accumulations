@@ -9,6 +9,8 @@ import models.Mantra
 import models.services.MantraService
 import controllers.responses._
 import javax.inject._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent._
 
 class MantraController @Inject() (mantraService: MantraService) extends Controller {
   implicit val mantraWrites: Writes[Mantra] = (
@@ -32,30 +34,32 @@ class MantraController @Inject() (mantraService: MantraService) extends Controll
     (JsPath \ "day").read[Int]
   )(Mantra.apply _)
 
-  def list = Action {
-    val json = Json.toJson(mantraService.findAll())
-    Ok(json)
-  }
-
-  def get(id: Long) = Action {
-    val mantra = mantraService.find(id)
-    mantra match {
-      case Some(m) => Ok(Json.toJson(m))
-      case None => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra with id " + id)))
+  def list = Action.async {
+    mantraService.findAll().map { found =>
+      val json = Json.toJson(found)
+      Ok(json)
     }
   }
 
-  def save = Action(BodyParsers.parse.json) { request =>
+  def get(id: Long) = Action.async {
+    mantraService.find(id) map { mantra =>
+      Ok(Json.toJson(mantra))
+    } recover {
+      case _: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra with id " + id)))
+    }
+  }
+
+  def save = Action.async(BodyParsers.parse.json) { request =>
     val mantraResult = request.body.validate[Mantra]
     mantraResult.fold(
       errors => {
-        BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors)))
+        Future { BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))) }
       },
       mantra => {
-        val savedMantraOption = mantraService.save(mantra)
-        savedMantraOption match {
-          case Some(m) => Ok(Json.obj("status" -> "OK", "message" -> ("Mantra '" + m.name + "' saved with id '" + m.id.get + "'.")))
-          case None => BadRequest(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
+        mantraService.save(mantra) map { savedMantraOption =>
+          Ok(Json.obj("status" -> "OK", "message" -> ("Mantra '" + savedMantraOption.name + "' saved with id '" + savedMantraOption.id.get + "'.")))
+        } recover {
+          case _: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
         }
       }
     )

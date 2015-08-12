@@ -1,6 +1,7 @@
 package models.daos
 
 import models.Mantra
+import scala.concurrent.Future
 
 /**
  * Mantra Data Access Object.
@@ -16,14 +17,14 @@ trait MantraDAO {
    * @param mantraID The ID of the mantra to find.
    * @return The found mantra or None if no mantra for the given ID could be found.
    */
-  def findById(mantraID: Long): Option[Mantra]
+  def findById(mantraID: Long): Future[Mantra]
 
   /**
    * Finds all mantra.
    *
    * @return The found mantra or empty list if no mantra could be found.
    */
-  def findAll(): List[Mantra]
+  def findAll(): Future[Seq[Mantra]]
 
   /**
    * Saves a mantra.
@@ -31,5 +32,5 @@ trait MantraDAO {
    * @param mantra The mantra to save.
    * @return The saved mantra.
    */
-  def save(mantra: Mantra): Option[Mantra]
+  def save(mantra: Mantra): Future[Mantra]
 }
