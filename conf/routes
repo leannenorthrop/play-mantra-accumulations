@@ -17,17 +17,13 @@ GET         /mantra/list                     controllers.MantraController.list
 GET         /assets/*file                    controllers.Assets.at(path="/public", file)
 GET         /webjars/*file                   controllers.WebJarAssets.at(file)
 
-# Mantra Resource
-GET         /mantra                          controllers.MantraController.list
-POST  		  /mantra               			     controllers.MantraController.save
-GET			    /mantra/:id 					           controllers.MantraController.get(id:Long)
-
 # Accumulations Resource
 POST        /accumulation                    controllers.AccumulationController.save
 GET         /accumulation                    controllers.AccumulationController.get
 
 # REST API
 POST        /auth/signin/credentials         controllers.rest.CredentialsAuthRestController.authenticate
+POST        /auth/signout                    controllers.rest.CredentialsAuthRestController.signOut
 GET         /api/mantra                      controllers.rest.MantraRestController.index
 GET         /api/mantra/:id                  controllers.rest.MantraRestController.get(id:Long)
 POST        /api/mantra                      controllers.rest.MantraRestController.save

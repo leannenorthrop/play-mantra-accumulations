@@ -34,11 +34,7 @@ import scala.language.postfixOps
 class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
     val e: RestEnvironment,
     userService: UserService,
-    authInfoRepository: AuthInfoRepository,
-    credentialsProvider: CredentialsProvider,
-    socialProviderRegistry: SocialProviderRegistry,
-    configuration: Configuration,
-    clock: Clock) extends Silhouette[User, JWTAuthenticator] {
+    credentialsProvider: CredentialsProvider) extends Silhouette[User, JWTAuthenticator] {
   val env: Environment[User, JWTAuthenticator] = e.env
 
   implicit val credentialReads: Reads[Credentials] = (
@@ -88,5 +84,24 @@ class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
         }.recoverWith(exceptionHandler)
       }
     )
+  }
+
+  /**
+   * Handles the Sign Out action.
+   *
+   * @return The result to display.
+   */
+  def signOut = UserAwareAction.async { implicit request =>
+    request.identity match {
+      case Some(user) =>
+        env.eventBus.publish(LogoutEvent(user, request, request2Messages))
+
+        request.authenticator match {
+          case Some(auth) => env.authenticatorService.discard(auth, Ok(Json.obj("status" -> "OK", "message" -> "Token expired.")))
+          case None => Future.successful(Ok(Json.obj("status" -> "KO", "message" -> "Token failed to expire due to authenticator not present.")))
+        }
+
+      case None => Future.successful(Ok(Json.obj("status" -> "KO", "message" -> "Not logged in.")))
+    }
   }
 }
