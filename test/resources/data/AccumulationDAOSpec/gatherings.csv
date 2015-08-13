@@ -1,0 +1,3 @@
+id, user_id, name, dedication, is_achieved, is_private, is_archived, y, m, d
+"1","600ba5de-01ff-4cb5-9b7b-ec4c5521f6e3","A gathering","dedicated to all","0","0","0","2015","8","12"
+"2","ec5cf3ab-a36a-4489-83d0-57386d3a7d28","A gathering 2","dedicated to all","0","0","0","2015","8","12"

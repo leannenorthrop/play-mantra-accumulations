@@ -14,18 +14,21 @@ import java.util.Calendar
 
 class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues with BeforeAndAfter {
   var dao: AccumulationDAO = null
+  val mantraId = 1L
+  val gatheringId = 1L
 
   before {
     dao = new AccumulationDAOImpl()
-    Await.result(db.run(sqlu"delete from accumulations"), Duration(2000, MILLISECONDS))
+    whenReady(db.run(sqlu"delete from accumulations")) { _ =>
+      cleanInsert("AccumulationDAOSpec")
+    }
   }
 
   after {
-    Await.result(db.run(sqlu"delete from accumulations"), Duration(2000, MILLISECONDS))
   }
 
   "Saving a new non-existant Accumulation" should "save and return Accumulation with the primary key" taggedAs (DbTest) in {
-    val accumulation = Accumulation(None, 2015, 8, 7, 100, 1, UUID.randomUUID(), -1)
+    val accumulation = Accumulation(None, 2015, 8, 7, 100, mantraId, UUID.randomUUID(), gatheringId)
 
     whenReady(dao.save(accumulation)) { updatedAccumulation =>
       val id: Option[Long] = updatedAccumulation.id
@@ -35,7 +38,7 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
 
   "Saving an existing Accumulation" should "save and return Accumulation with the primary key" taggedAs (DbTest) in {
     val uid = UUID.randomUUID()
-    val accumulation = Accumulation(None, 2015, 8, 7, 200, 1, uid, -1)
+    val accumulation = Accumulation(None, 2015, 8, 7, 200, mantraId, uid, gatheringId)
 
     whenReady(dao.save(accumulation)) { updatedAccumulation =>
       val id: Option[Long] = updatedAccumulation.id
@@ -46,13 +49,12 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
         val id2: Option[Long] = updatedAccumulation2.id
         assert(id2.value === idValue)
       }
-
     }
   }
 
   "Find Accumulation for today" should "throw java.util.NoSuchElementException if no entry exists for today" taggedAs (DbTest) in {
     intercept[java.util.NoSuchElementException] {
-      Await.result(dao.findForToday(UUID.randomUUID(), -1L, 1L), Duration(5000, MILLISECONDS))
+      Await.result(dao.findForToday(UUID.randomUUID(), -1L, 1L), Duration(5000L, MILLISECONDS))
     }
   }
 
@@ -62,8 +64,6 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     val month = cal.get(Calendar.MONTH) + 1
     val day = cal.get(Calendar.DAY_OF_MONTH)
     val uid = UUID.randomUUID()
-    val mantraId = 1l
-    val gatheringId = -1L
     val count = 200L
     val accumulation = Accumulation(None, year, month, day, count, mantraId, uid, gatheringId)
 
@@ -86,13 +86,12 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     val month = cal.get(Calendar.MONTH) + 1
     val day = cal.get(Calendar.DAY_OF_MONTH)
 
-    val mantraId = 1L
     val setup = for {
-      _ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), -1))
-      _ <- dao.save(Accumulation(None, year, month, day + 1, 2, mantraId, UUID.randomUUID(), -2))
-      _ <- dao.save(Accumulation(None, year, month, day + 2, 3, mantraId, UUID.randomUUID(), -3))
-      _ <- dao.save(Accumulation(None, year, month - 1, day + 3, 4, mantraId, UUID.randomUUID(), -4))
-      _ <- dao.save(Accumulation(None, year - 1, month, day, 5, mantraId, UUID.randomUUID(), -5))
+      _ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), gatheringId))
+      _ <- dao.save(Accumulation(None, year, month, day + 1, 2, mantraId, UUID.randomUUID(), gatheringId))
+      _ <- dao.save(Accumulation(None, year, month, day + 2, 3, mantraId, UUID.randomUUID(), gatheringId))
+      _ <- dao.save(Accumulation(None, year, month - 1, day + 3, 4, mantraId, UUID.randomUUID(), gatheringId))
+      _ <- dao.save(Accumulation(None, year - 1, month, day, 5, mantraId, UUID.randomUUID(), gatheringId))
     } yield ("done")
 
     whenReady(setup) { i =>
@@ -120,15 +119,13 @@ class AccumulationDAOSpec extends DatabaseSpec with Matchers with OptionValues w
     val year = cal.get(Calendar.YEAR)
     val month = cal.get(Calendar.MONTH) + 1
     val day = cal.get(Calendar.DAY_OF_MONTH)
-    val gatheringId = -1L
-    val mantraId = 1L
     val setup = for {
       _ <- dao.save(Accumulation(None, year, month, day, 1, mantraId, UUID.randomUUID(), gatheringId))
       _ <- dao.save(Accumulation(None, year, month, day + 1, 2, mantraId, UUID.randomUUID(), gatheringId))
       _ <- dao.save(Accumulation(None, year, month, day + 2, 3, mantraId, UUID.randomUUID(), gatheringId))
       _ <- dao.save(Accumulation(None, year, month - 1, day + 3, 4, mantraId, UUID.randomUUID(), gatheringId))
       _ <- dao.save(Accumulation(None, year - 1, month, day, 5, mantraId, UUID.randomUUID(), gatheringId))
-      _ <- dao.save(Accumulation(None, year, month, day, 5, mantraId, UUID.randomUUID(), -5L))
+      _ <- dao.save(Accumulation(None, year, month, day, 5, mantraId, UUID.randomUUID(), 2L))
     } yield ("done")
 
     whenReady(setup) { _ =>

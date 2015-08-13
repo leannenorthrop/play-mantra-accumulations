@@ -8,6 +8,7 @@ import scala.concurrent.duration._
 import scala.concurrent._
 import models.Goal
 import models.Gathering
+import models.Mantra
 import java.util.UUID
 import slick.driver.PostgresDriver.api._
 
@@ -16,16 +17,23 @@ class GoalDAOSpec extends DatabaseSpec with Matchers with OptionValues with Befo
 
   before {
     dao = new GoalDAOImpl()
-    Await.result(db.run(sqlu"delete from gatherings"), Duration(2000, MILLISECONDS))
-    Await.result(db.run(sqlu"delete from goals"), Duration(2000, MILLISECONDS))
+    val f = for {
+      _ <- db.run(sqlu"delete from goals")
+      _ <- db.run(sqlu"delete from accumulations")
+      _ <- db.run(sqlu"delete from gatherings")
+      _ <- db.run(sqlu"delete from mantra")
+    } yield ()
+
+    whenReady(f) { _ =>
+      cleanInsert("GoalDAOSpec")
+    }
   }
 
   after {
-    //Await.result(db.run(sqlu"delete from goals"), Duration(2000, MILLISECONDS))
   }
 
   "Saving a new non-existant Goal" should "save" taggedAs (DbTest) in {
-    val goal = Goal(1, 2, 100, false)
+    val goal = Goal(1L, 1L, 100, false)
 
     whenReady(dao.save(goal)) { savedGoal =>
       val length = Await.result(db.run(sql"select count(*) from goals".as[Int]), Duration(2000, MILLISECONDS)).head
@@ -34,7 +42,7 @@ class GoalDAOSpec extends DatabaseSpec with Matchers with OptionValues with Befo
   }
 
   "Saving an existing Goal" should "update" taggedAs (DbTest) in {
-    val goal = Goal(1, 2, 100, false)
+    val goal = Goal(1L, 1L, 100, false)
 
     whenReady(dao.save(goal)) { savedGoal =>
       val length = Await.result(db.run(sql"select count(*) from goals".as[Int]), Duration(2000, MILLISECONDS)).head
@@ -49,26 +57,18 @@ class GoalDAOSpec extends DatabaseSpec with Matchers with OptionValues with Befo
   }
 
   "Finding Goals for a gathering" should "only return goals related to the gathering" taggedAs (DbTest) in {
-    val gatheringDAO = new GatheringDAOImpl()
     val f = for {
-      g1 <- gatheringDAO.save(Gathering(None, UUID.randomUUID(), "A gathering 1", "dedicated to all", false, false, 2015, 8, 12))
-      g2 <- gatheringDAO.save(Gathering(None, UUID.randomUUID(), "A gathering 2", "dedicated to all", false, false, 2015, 8, 12))
-    } yield (g1, g2)
+      _ <- dao.save(Goal(1L, 1L, 10000, false))
+      _ <- dao.save(Goal(1L, 3L, 11000, false))
+      _ <- dao.save(Goal(1L, 4L, 12000, false))
+      _ <- dao.save(Goal(2L, 3L, 13000, false))
+      _ <- dao.save(Goal(2L, 3L, 14000, false))
+      _ <- dao.save(Goal(2L, 3L, 15000, false))
+    } yield ()
 
-    whenReady(f) { gatherings =>
-      val f2 = for {
-        _ <- dao.save(Goal(gatherings._1.id.get, 2, 10000, false))
-        _ <- dao.save(Goal(gatherings._1.id.get, 3, 11000, false))
-        _ <- dao.save(Goal(gatherings._1.id.get, 4, 12000, false))
-        _ <- dao.save(Goal(gatherings._2.id.get, 3, 13000, false))
-        _ <- dao.save(Goal(gatherings._2.id.get, 3, 14000, false))
-        _ <- dao.save(Goal(gatherings._2.id.get, 3, 15000, false))
-      } yield ()
-
-      whenReady(f2) { _ =>
-        whenReady(dao.find(gatherings._1.id.get)) { foundGoals =>
-          foundGoals.length shouldBe (3)
-        }
+    whenReady(f) { _ =>
+      whenReady(dao.find(1L)) { foundGoals =>
+        foundGoals.length shouldBe (3)
       }
     }
   }

@@ -12,6 +12,8 @@ import org.scalatest.concurrent.{ ScalaFutures, Futures, PatienceConfiguration }
 import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.Tag
 import play.api.db.slick.evolutions._
+import org.dbunit.database._
+import org.dbunit.util.fileloader._
 
 object DbTest extends Tag("org.northrop.leanne.play.mantra.tags.DbTest")
 
@@ -42,16 +44,34 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
     db = slickDB(app, dbName)
 
     val playDb = playDB(app, dbName)
-    println("Applying evolutions to " + playDb)
     Evolutions.applyEvolutions(playDb)
 
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 
   override def afterAll() {
-    try super.afterAll() // To be stackable, must call super.afterEach
-    //Evolutions.cleanupEvolutions(database)
-    finally Play.stop(app)
+    try {
+      super.afterAll() // To be stackable, must call super.afterEach
+
+      val playDb = playDB(app, dbName)
+      Evolutions.cleanupEvolutions(playDb)
+    } finally Play.stop(app)
+  }
+
+  def getDataSet(name: String): org.dbunit.dataset.IDataSet = {
+    val ldr = new CsvDataFileLoader()
+    ldr.load("/data/" + name + "/")
+  }
+
+  def cleanInsert(name: String): Unit = {
+    val connection = new org.dbunit.database.DatabaseConnection(db.createSession.conn)
+    val dataSet = getDataSet(name)
+
+    try {
+      org.dbunit.operation.DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet)
+    } finally {
+      connection.close()
+    }
   }
 }
 
