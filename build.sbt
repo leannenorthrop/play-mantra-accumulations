@@ -23,7 +23,8 @@ libraryDependencies ++= Seq(
   "org.scalatestplus" %% "play" % "1.4.0-M3" % "test",
   "org.hsqldb" % "hsqldb" % "2.3.3" % "test",
   "org.dbunit" % "dbunit" % "2.5.1" % "test",
-  "com.h2database" % "h2" % "1.4.186" % "test"
+  "com.h2database" % "h2" % "1.4.186" % "test",
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test"
 )
 
 routesGenerator := InjectedRoutesGenerator
