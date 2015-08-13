@@ -12,7 +12,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import scala.concurrent.Future
 
 /**
- * Handles actions to users.
+ * Handles actions to users. From play-slick-postgres seed template.
  *
  * @param userDAO The user DAO implementation.
  */

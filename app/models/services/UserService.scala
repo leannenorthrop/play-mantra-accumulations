@@ -7,7 +7,7 @@ import models.User
 import scala.concurrent.Future
 
 /**
- * Handles actions to users.
+ * Handles actions to users. From play-slick-postgres seed template.
  */
 trait UserService extends IdentityService[User] {
 
