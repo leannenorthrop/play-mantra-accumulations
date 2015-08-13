@@ -33,4 +33,12 @@ trait MantraDAO {
    * @return The saved mantra.
    */
   def save(mantra: Mantra): Future[Mantra]
+
+  /**
+   * 'Deletes' a mantra.
+   *
+   * @param mantra The mantra to delete
+   * @return true if deleted false otherwise
+   */
+  def delete(mantra: Mantra): Future[Boolean]
 }

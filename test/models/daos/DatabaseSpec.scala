@@ -53,8 +53,8 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
     try {
       super.afterAll() // To be stackable, must call super.afterEach
 
-      val playDb = playDB(app, dbName)
-      Evolutions.cleanupEvolutions(playDb)
+      //val playDb = playDB(app, dbName)
+      //Evolutions.cleanupEvolutions(playDb)
     } finally Play.stop(app)
   }
 

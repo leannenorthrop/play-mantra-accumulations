@@ -13,11 +13,4 @@ package models
  * @param month Month (value between 1 and 12)
  * @param day Day (value between 1 and 31)
  */
-case class Mantra(
-  id: Option[Long],
-  name: String,
-  description: String,
-  imgUrl: String,
-  year: Int,
-  month: Int,
-  day: Int)
+case class Mantra(id: Option[Long], name: String, description: String, imgUrl: String, year: Int, month: Int, day: Int)

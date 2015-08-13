@@ -283,7 +283,7 @@ trait DBTableDefinitions {
   val slickOAuth2Infos = TableQuery[OAuth2Infos]
   val slickOpenIDInfos = TableQuery[OpenIDInfos]
   val slickOpenIDAttributes = TableQuery[OpenIDAttributes]
-  val slickMantras = TableQuery[MantraTable]
+  val mantrasTable = TableQuery[MantraTable]
   val accumulationsTable = TableQuery[AccumulationTable]
   val gatheringsTable = TableQuery[GatheringTable]
   val goalsTable = TableQuery[GoalTable]

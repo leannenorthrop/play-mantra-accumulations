@@ -1,5 +1,5 @@
 # --- !Ups
-create table "mantra" ("id" BIGSERIAL NOT NULL PRIMARY KEY,"name" VARCHAR UNIQUE  NOT NULL,"description" VARCHAR  NOT NULL,"image_url" VARCHAR NOT NULL, "y" INT  NOT NULL, "m"  INT NOT NULL, "d" INT NOT NULL, "is_archived" INT  NOT NULL);
+create table "mantra" ("id" BIGSERIAL NOT NULL PRIMARY KEY,"name" VARCHAR UNIQUE  NOT NULL,"description" TEXT NOT NULL,"image_url" VARCHAR NOT NULL, "y" INT  NOT NULL, "m"  INT NOT NULL, "d" INT NOT NULL, "is_archived" INT  NOT NULL);
 INSERT INTO "mantra" ("name","description","image_url", "y", "m", "d", "is_archived") VALUES ('Short Chenrezig','No description','http://www.buddhadordenma.org/images/chenrezig-thangka.jpg', 2015, 8, 6, 0);
 
 create table "gatherings" ("id" BIGSERIAL NOT NULL PRIMARY KEY, user_id VARCHAR NOT NULL, "name" VARCHAR UNIQUE NOT NULL, "dedication" TEXT NOT NULL, is_achieved INT NOT NULL, is_private INT NOT NULL, is_archived INT NOT NULL, y INT NOT NULL, m INT NOT NULL, d INT NOT NULL);
