@@ -12,6 +12,16 @@ import javax.inject._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent._
 
+/**
+ *
+ * Curl Examples:
+ *
+ * Save:
+ *   - Find All: curl http://localhost:9000/api/mantra -vvvv -H 'X-Auth-Token: ...'
+ *   - Find By Id: curl http://localhost:9000/api/mantra/1 -vvvv -H 'X-Auth-Token: ...'
+ *   - New: curl -X POST http://localhost:9000/mantra -H 'Content-Type: application/json' -d '{"id":null,"name":"mani","description":"No description","imgUrl":"http://someimg","year":2015,"month":8,"day":6}' -vvvv -H 'X-Auth-Token: ...'
+ *   - Existing: curl -X POST http://localhost:9000/mantra -H 'Content-Type: application/json' -d '{"id":2,"name":"mani","description":"No description","imgUrl":"http://someimg","year":2015,"month":8,"day":6}' -vvvv -H 'X-Auth-Token: ...'
+ */
 class MantraController @Inject() (mantraService: MantraService) extends Controller {
   implicit val mantraWrites: Writes[Mantra] = (
     (JsPath \ "id").write[Option[Long]] and

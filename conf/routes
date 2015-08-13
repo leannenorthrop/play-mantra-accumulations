@@ -28,4 +28,6 @@ GET         /accumulation                    controllers.AccumulationController.
 
 # REST API
 POST        /auth/signin/credentials         controllers.rest.CredentialsAuthRestController.authenticate
-GET         /rest/mantra                     controllers.rest.MantraRestController.index
+GET         /api/mantra                      controllers.rest.MantraRestController.index
+GET         /api/mantra/:id                  controllers.rest.MantraRestController.get(id:Long)
+POST        /api/mantra                      controllers.rest.MantraRestController.save
