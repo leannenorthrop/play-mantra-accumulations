@@ -29,6 +29,13 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
 
+import play.api.Play
+import play.api.Play.current
+import scala.concurrent.duration._
+import java.util.concurrent.TimeUnit
+
+case class RestEnvironment(env: Environment[User, JWTAuthenticator])
+
 /**
  * The Guice module which wires all Silhouette dependencies.
  */
@@ -88,6 +95,28 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   }
 
   /**
+   * Provides the Silhouette environment.
+   *
+   * @param userService The user service implementation.
+   * @param authenticatorService The authentication service implementation.
+   * @param eventBus The event bus instance.
+   * @return The Silhouette environment.
+   */
+  @Provides
+  def provideEnvironment(
+    userService: UserService,
+    authenticatorService: AuthenticatorService[JWTAuthenticator],
+    eventBus: EventBus): RestEnvironment = {
+    RestEnvironment(
+      Environment[User, JWTAuthenticator](
+        userService,
+        authenticatorService,
+        Seq(),
+        eventBus
+      ))
+  }
+
+  /**
    * Provides the social provider registry.
    *
    * @param facebookProvider The Facebook provider implementation.
@@ -138,6 +167,37 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
     val config = configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     new CookieAuthenticatorService(config, None, fingerprintGenerator, idGenerator, clock)
+  }
+
+  /**
+   * Provides the authenticator service.
+   *
+   * @param fingerprintGenerator The fingerprint generator implementation.
+   * @param idGenerator The ID generator implementation.
+   * @param configuration The Play configuration.
+   * @param clock The clock instance.
+   * @return The authenticator service.
+   */
+  @Provides
+  def provideAuthenticatorService(idGenerator: IDGenerator): AuthenticatorService[JWTAuthenticator] = {
+    val authenticatorService: AuthenticatorService[JWTAuthenticator] = {
+      val idleTimeout = FiniteDuration(Play.configuration.getMilliseconds("silhouette.authenticator.authenticatorIdleTimeout").getOrElse(1800000L), TimeUnit.MILLISECONDS)
+      val expiry = FiniteDuration(Play.configuration.getMilliseconds("silhouette.authenticator.authenticatorExpiry").getOrElse(43200000L), TimeUnit.MILLISECONDS)
+      val settings = JWTAuthenticatorSettings(
+        headerName = Play.configuration.getString("silhouette.authenticator.headerName").getOrElse { "X-Auth-Token" },
+        issuerClaim = Play.configuration.getString("silhouette.authenticator.issueClaim").getOrElse { "play-silhouette" },
+        encryptSubject = Play.configuration.getBoolean("silhouette.authenticator.encryptSubject").getOrElse { true },
+        authenticatorIdleTimeout = Some(idleTimeout), // This feature is disabled by default to prevent the generation of a new JWT on every request
+        authenticatorExpiry = expiry,
+        sharedSecret = Play.configuration.getString("play.crypto.secret").get)
+      new JWTAuthenticatorService(
+        settings = settings,
+        dao = None,
+        idGenerator = idGenerator,
+        clock = Clock())
+    }
+
+    authenticatorService
   }
 
   /**
