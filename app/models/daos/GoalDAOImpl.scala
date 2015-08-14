@@ -69,7 +69,7 @@ class GoalDAOImpl extends GoalDAO with DAOSlick {
       done <- Future { true }
     } yield done
     result recover {
-      case _: Throwable => false
+      case _: UnsupportedOperationException => false
     }
   }
 }

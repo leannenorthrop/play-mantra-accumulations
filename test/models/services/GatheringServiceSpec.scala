@@ -2,9 +2,9 @@ package models.services
 
 import play.api.inject.guice.GuiceInjectorBuilder
 import play.api.inject.bind
-import models.daos.GatheringDAO
+import models.daos.{ GatheringDAO, GoalDAO }
 import org.scalatest._
-import models.Gathering
+import models.{ Gathering, Goal }
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -13,10 +13,12 @@ import java.util.UUID
 class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter {
   var service: GatheringService = null
   val dao = mock[GatheringDAO]
+  val goalDao = mock[GoalDAO]
 
   before {
     val injector = new GuiceInjectorBuilder()
       .bindings(Seq(bind[GatheringDAO].toInstance(dao),
+        bind[GoalDAO].toInstance(goalDao),
         bind[GatheringService].to[GatheringServiceImpl]))
       .injector
 
@@ -56,6 +58,66 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
 
     whenReady(service.findByMantra(mantraId)) { found =>
       found.length shouldBe (1)
+    }
+  }
+
+  "Add goal" should "save goal if it doesn't already exisit" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+    val goal = Goal(gatheringId, mantraId, 100, false)
+
+    (goalDao.find(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { throw new java.util.NoSuchElementException() })
+    (goalDao.save _).expects(goal).returning(Future { goal })
+
+    whenReady(service.add(goal)) { result =>
+      result shouldBe (true)
+    }
+  }
+
+  it should "not save goal if it already exists" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+    val goal = Goal(gatheringId, mantraId, 100, false)
+
+    (goalDao.find(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { goal })
+
+    whenReady(service.add(goal)) { result =>
+      result shouldBe (false)
+    }
+  }
+
+  it should "pass on error if fails to save" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+    val goal = Goal(gatheringId, mantraId, 100, false)
+
+    (goalDao.find(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { throw new java.util.NoSuchElementException() })
+    (goalDao.save _).expects(goal).returning(Future { throw new RuntimeException() })
+
+    intercept[RuntimeException] {
+      Await.result(service.add(goal), Duration(5, SECONDS))
+    }
+  }
+
+  "Remove goal" should "delete goal if exists" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+
+    (goalDao.delete(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { true })
+
+    whenReady(service.remove(gatheringId, mantraId)) { result =>
+      result shouldBe (true)
+    }
+  }
+
+  it should "return false if goal doesn't exist" taggedAs ServiceTest in {
+    val gatheringId = 1L
+    val mantraId = 2L
+
+    (goalDao.delete(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { false })
+
+    whenReady(service.remove(gatheringId, mantraId)) { result =>
+      result shouldBe (false)
     }
   }
 }

@@ -1,6 +1,6 @@
 package models.services
 
-import models.Gathering
+import models.{ Gathering, Goal }
 import scala.concurrent._
 
 /**
@@ -25,4 +25,21 @@ trait GatheringService {
    * @return Found gatherings, if not found future will fail.
    */
   def findByMantra(id: Long): Future[Seq[Gathering]]
+
+  /**
+   * Add an accumulation goal to a gathering.
+   *
+   * @param goal Goal to add
+   * @return true if successfully added
+   */
+  def add(goal: Goal): Future[Boolean]
+
+  /**
+   * Remove an accumulation goal from a gathering.
+   *
+   * @param gatheringId Gathering id of Goal to remove
+   * @param mantraId Mantra id of Goal to remove
+   * @return true if successfully added
+   */
+  def remove(gatheringId: Long, mantraId: Long): Future[Boolean]
 }
