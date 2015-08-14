@@ -46,6 +46,19 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
   }
 
   /**
+   * Finds all Gatherings.
+   *
+   * @return Collection of found Gatherings.
+   */
+  def find(): Future[Seq[Gathering]] = {
+    db.run(gatheringsTable.filter(_.isArchived === 0).result).map {
+      _.map { row =>
+        Gathering(Some(row.id), UUID.fromString(row.userId), row.name, row.dedication, (row.isAchieved == 1), (row.isPrivate == 1), row.year, row.month, row.day)
+      }
+    }
+  }
+
+  /**
    * Finds gatherings for specified mantra.
    *
    * @param mantraID Mantra id to find gatherings for

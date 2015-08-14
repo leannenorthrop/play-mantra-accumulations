@@ -21,6 +21,13 @@ trait GatheringDAO {
   def save(gathering: Gathering): Future[Gathering]
 
   /**
+   * Finds all Gatherings.
+   *
+   * @return Collection of found Gatherings.
+   */
+  def find(): Future[Seq[Gathering]]
+
+  /**
    * Finds gatherings for specified mantra.
    *
    * @param mantraID Mantra id to find gatherings for
