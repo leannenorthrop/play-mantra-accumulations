@@ -34,9 +34,12 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
    * @return The found mantra or None if no mantra for the given ID could be found.
    */
   def findById(mantraID: Long): Future[Mantra] = {
-    db.run(mantrasTable.filter(_.id === mantraID).filter(_.isArchived === 0).result).map(_.map { row =>
-      Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
-    }.head)
+    db.run(mantrasTable.filter(_.id === mantraID).filter(_.isArchived === 0).result).map { result =>
+      val list = result.map { row =>
+        Mantra(Some(row.id), row.name, row.description, row.imgUrl, row.year, row.month, row.day)
+      }
+      if (list.length > 0) list.head else throw new java.util.NoSuchElementException(s"Mantra with id ${mantraID} not found.")
+    }
   }
 
   /**

@@ -62,6 +62,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[AccumulationService].to[AccumulationServiceImpl]
     bind[AccumulationDAO].to[AccumulationDAOImpl]
     bind[GatheringService].to[GatheringServiceImpl]
+    bind[GoalDAO].to[GoalDAOImpl]
+    bind[GatheringDAO].to[GatheringDAOImpl]
   }
 
   /**

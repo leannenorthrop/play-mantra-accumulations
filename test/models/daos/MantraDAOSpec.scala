@@ -67,6 +67,29 @@ class MantraDAOSpec extends DatabaseSpec with Matchers with OptionValues with Be
     }
   }
 
+  "Finding a mantra" should "return the mantra" taggedAs (DbTest) in {
+    val f = for {
+      _ <- dao.save(Mantra(None, "name1", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name2", "description", "http://url", 2015, 8, 19))
+      m3 <- dao.save(Mantra(None, "name3", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name4", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name5", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name6", "description", "http://url", 2015, 8, 19))
+    } yield m3
+
+    whenReady(f) { mantra =>
+      whenReady(dao.findById(mantra.id.get)) { foundMantra =>
+        foundMantra.name shouldBe ("name3")
+      }
+    }
+  }
+
+  it should "fail if not found" taggedAs (DbTest) in {
+    intercept[java.util.NoSuchElementException] {
+      Await.result(dao.findById(234L), Duration(5, SECONDS))
+    }
+  }
+
   "Deleting all mantra" should "hide mantra from findAll" taggedAs (DbTest) in {
     val f = for {
       _ <- dao.save(Mantra(None, "name1", "description", "http://url", 2015, 8, 19))
