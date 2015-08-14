@@ -22,8 +22,15 @@ POST        /accumulation                    controllers.AccumulationController.
 GET         /accumulation                    controllers.AccumulationController.get
 
 # REST API
-POST        /auth/signin/credentials         controllers.rest.CredentialsAuthRestController.authenticate
-POST        /auth/signout                    controllers.rest.CredentialsAuthRestController.signOut
-GET         /api/mantra                      controllers.rest.MantraRestController.index
-GET         /api/mantra/:id                  controllers.rest.MantraRestController.get(id:Long)
-POST        /api/mantra                      controllers.rest.MantraRestController.save
+POST        /auth/signin/credentials              controllers.rest.CredentialsAuthRestController.authenticate
+POST        /auth/signout                         controllers.rest.CredentialsAuthRestController.signOut
+GET         /api/mantra                           controllers.rest.MantraRestController.index
+GET         /api/mantra/:id                       controllers.rest.MantraRestController.get(id:Long)
+POST        /api/mantra                           controllers.rest.MantraRestController.save
+GET         /api/gatherings                       controllers.rest.GatheringRestController.index
+POST        /api/gatherings                       controllers.rest.GatheringRestController.save
+GET         /api/gatherings/mantra/:id            controllers.rest.GatheringRestController.find(id:Long)
+#GET        /api/gatherings/:gid/mantra/:id       controllers.rest.GatheringRestController.find(gid:Long,id:Long)
+POST        /api/gatherings/:gid/mantra/:id/goal  controllers.rest.GatheringRestController.addGoal(gid:Long,id:Long)
+GET         /api/gatherings/:gid/mantra/:id/goal  controllers.rest.GatheringRestController.findGoal(gid:Long,id:Long)
+DELETE      /api/gatherings/:gid/mantra/:id/goal  controllers.rest.GatheringRestController.removeGoal(gid:Long,id:Long)

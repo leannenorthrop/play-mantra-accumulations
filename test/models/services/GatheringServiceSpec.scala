@@ -50,11 +50,20 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
     }
   }
 
+  "Find" should "delegate to dao" taggedAs (ServiceTest) in {
+    val gathering = Gathering(None, UUID.randomUUID(), "A Gathering", "A Dedication", false, true, 2015, 8, 1)
+    (dao.find _).expects().returning(Future { Seq(gathering) })
+
+    whenReady(service.find()) { found =>
+      found.length shouldBe (1)
+    }
+  }
+
   "Find by mantra" should "delegate to dao" taggedAs (ServiceTest) in {
     val mantraId = 1L
     val gathering = Gathering(None, UUID.randomUUID(), "A Gathering", "A Dedication", false, true, 2015, 8, 1)
 
-    (dao.find _).expects(mantraId).returning(Future { Seq(gathering) })
+    (dao.find(_: Long)).expects(mantraId).returning(Future { Seq(gathering) })
 
     whenReady(service.findByMantra(mantraId)) { found =>
       found.length shouldBe (1)
@@ -110,7 +119,7 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
     }
   }
 
-  it should "return false if goal doesn't exist" taggedAs ServiceTest in {
+  it should "return false if goal doesn't exist" taggedAs (ServiceTest) in {
     val gatheringId = 1L
     val mantraId = 2L
 
@@ -118,6 +127,18 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
 
     whenReady(service.remove(gatheringId, mantraId)) { result =>
       result shouldBe (false)
+    }
+  }
+
+  "Find goal" should "delegate to goal dao" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+    val goal = Goal(gatheringId, mantraId, 100, false)
+
+    (goalDao.find(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { goal })
+
+    whenReady(service.findGoal(gatheringId, mantraId)) { result =>
+      result shouldBe (goal)
     }
   }
 }

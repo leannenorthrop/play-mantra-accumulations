@@ -34,6 +34,15 @@ trait GatheringService {
   def findByMantra(id: Long): Future[Seq[Gathering]]
 
   /**
+   * Finds a goal by it's gathering and mantra id.
+   *
+   * @param gatheringId Id of gathering goal belongs to
+   * @param mantraId Id of mantra goal refers to
+   * @return Goal
+   */
+  def findGoal(gatheringId: Long, mantraId: Long): Future[Goal]
+
+  /**
    * Add an accumulation goal to a gathering.
    *
    * @param goal Goal to add
