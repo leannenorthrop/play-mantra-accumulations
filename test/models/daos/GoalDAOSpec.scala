@@ -72,4 +72,20 @@ class GoalDAOSpec extends DatabaseSpec with Matchers with OptionValues with Befo
       }
     }
   }
+
+  "Deleting a non-existant goal" should "return false" taggedAs (DbTest) in {
+    whenReady(dao.delete(-1L, -2L)) { result =>
+      result shouldBe (false)
+    }
+  }
+
+  it should "return true when deleting existing goal" taggedAs (DbTest) in {
+    val goal = Goal(1L, 1L, 100, false)
+
+    whenReady(dao.save(goal)) { savedGoal =>
+      whenReady(dao.delete(1L, 1L)) { result =>
+        result shouldBe (true)
+      }
+    }
+  }
 }

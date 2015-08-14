@@ -262,8 +262,9 @@ trait DBTableDefinitions {
    * @param mantraId Primary key value of mantra this refers to
    * @param goal Number of mantras to be accumulated
    * @param isAchieved 1 if achieved 0 otherwise
+   * @param isArchived 1 if archived 0 otherwise
    */
-  case class GoalRow(gatheringId: Long, mantraId: Long, goal: Long, isAchieved: Int)
+  case class GoalRow(gatheringId: Long, mantraId: Long, goal: Long, isAchieved: Int, isArchived: Int)
 
   /** Represents Goals database table. */
   class GoalTable(tag: Tag) extends Table[GoalRow](tag, "goals") {
@@ -271,7 +272,8 @@ trait DBTableDefinitions {
     def mantraId = column[Long]("mantra_id", O.PrimaryKey)
     def goal = column[Long]("goal")
     def isAchieved = column[Int]("is_achieved")
-    def * = (gatheringId, mantraId, goal, isAchieved) <> (GoalRow.tupled, GoalRow.unapply)
+    def isArchived = column[Int]("is_archived")
+    def * = (gatheringId, mantraId, goal, isAchieved, isArchived) <> (GoalRow.tupled, GoalRow.unapply)
   }
 
   // table query definitions

@@ -26,4 +26,13 @@ trait GoalDAO {
    * @return List of goals
    */
   def find(gatheringId: Long): Future[Seq[Goal]]
+
+  /**
+   * Archives a goal but doesn't remove.
+   *
+   * @param gatheringId Id of goal's gathering
+   * @param mantraId Id of goal's mantra
+   * @return true if archived, false otherwise.
+   */
+  def delete(gatheringId: Long, mantraId: Long): Future[Boolean]
 }

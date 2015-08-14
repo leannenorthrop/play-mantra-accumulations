@@ -21,7 +21,7 @@ class GoalDAOImpl extends GoalDAO with DAOSlick {
    * @return goal
    */
   def save(goal: Goal): Future[Goal] = {
-    val dbRow = GoalRow(goal.gatheringId, goal.mantraId, goal.goal, if (goal.isAchieved) 1 else 0)
+    val dbRow = GoalRow(goal.gatheringId, goal.mantraId, goal.goal, if (goal.isAchieved) 1 else 0, 0)
     db.run(goalsTable.insertOrUpdate(dbRow)).map(_ => goal)
   }
 
@@ -36,6 +36,39 @@ class GoalDAOImpl extends GoalDAO with DAOSlick {
       _.map { row =>
         Goal(row.gatheringId, row.mantraId, row.goal, (row.isAchieved == 1))
       }
+    }
+  }
+
+  /**
+   * Finds goals for specified gathering.
+   *
+   * @param gatheringId Gathering id to find goals for
+   * @param mantraId Mantra id to find goal for
+   * @return List of goals
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Goal] = {
+    db.run(goalsTable.filter(_.gatheringId === gatheringId).result).map {
+      _.map { row =>
+        Goal(row.gatheringId, row.mantraId, row.goal, (row.isAchieved == 1))
+      }.head
+    }
+  }
+
+  /**
+   * Archives a goal but doesn't remove.
+   *
+   * @param gatheringId Id of goal's gathering
+   * @param mantraId Id of goal's mantra
+   * @return true if archived, false otherwise.
+   */
+  def delete(gatheringId: Long, mantraId: Long): Future[Boolean] = {
+    val result = for {
+      goal <- db.run(goalsTable.filter(_.gatheringId === gatheringId).filter(_.mantraId === mantraId).result)
+      _ <- db.run(goalsTable.insertOrUpdate(goal.head.copy(isArchived = 1)))
+      done <- Future { true }
+    } yield done
+    result recover {
+      case _: Throwable => false
     }
   }
 }
