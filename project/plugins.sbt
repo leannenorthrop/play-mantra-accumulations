@@ -1,8 +1,8 @@
 // Comment to get more information during initialization
-logLevel := Level.Debug
+logLevel := Level.Warn
 
 resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
-//resolvers += Classpaths.sbtPluginReleases
+resolvers += Classpaths.sbtPluginReleases
 
 // The Play plugin
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.4.2")
