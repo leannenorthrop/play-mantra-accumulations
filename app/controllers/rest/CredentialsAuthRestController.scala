@@ -31,6 +31,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
+import com.mohiva.play.silhouette.impl.exceptions._
+
 class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
     val e: RestEnvironment,
     userService: UserService,
@@ -83,6 +85,7 @@ class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
           }
         }.recoverWith {
           case i: IdentityNotFoundException => Future.successful(BadRequest(Json.obj("status" -> "KO", "message" -> "No account is associated with provided details. Please sign up first via web site.")))
+          case e: InvalidPasswordException => Future.successful(BadRequest(Json.obj("status" -> "KO", "message" -> "Invalid password.")))
         }
       }
     )
