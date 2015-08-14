@@ -30,6 +30,15 @@ class GatheringServiceImpl @Inject() (dao: GatheringDAO, goalDAO: GoalDAO) exten
   def find(): Future[Seq[Gathering]] = dao.find()
 
   /**
+   * Finds gathering for specified gathering and mantra.
+   *
+   * @param gatheringId Gathering id to find Gathering for
+   * @param mantraId Mantra id to find Gathering for
+   * @return Gathering
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Gathering] = dao.find(gatheringId, mantraId)
+
+  /**
    * Archives gathering specified by given gathering id removing from all find results.
    *
    * @param gatheringId Id of gathering to archive.

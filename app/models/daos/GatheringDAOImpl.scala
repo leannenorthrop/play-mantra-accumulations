@@ -79,6 +79,26 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
   }
 
   /**
+   * Finds gathering for specified gathering and mantra.
+   *
+   * @param gatheringId Gathering id to find Gathering for
+   * @param mantraId Mantra id to find Gathering for
+   * @return Gathering
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Gathering] = {
+    val join = for {
+      gathering <- gatheringsTable
+      goals <- goalsTable if goals.gatheringId === gatheringId && goals.gatheringId === gathering.id && goals.mantraId === mantraId && gathering.isArchived === 0
+    } yield gathering
+    db.run(join.result).map { result =>
+      val list = result.map { row =>
+        Gathering(Some(row.id), UUID.fromString(row.userId), row.name, row.dedication, (row.isAchieved == 1), (row.isPrivate == 1), row.year, row.month, row.day)
+      }
+      if (list.length > 0) list.head else throw new java.util.NoSuchElementException(s"Gathering with id '${gatheringId}' and mantra id '${mantraId}' not found.")
+    }
+  }
+
+  /**
    * Returns true if gathering with the given name exists, false otherwise.
    *
    * @param name Name of gathering to check existence for

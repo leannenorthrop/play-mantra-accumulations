@@ -36,6 +36,15 @@ trait GatheringDAO {
   def find(mantraId: Long): Future[Seq[Gathering]]
 
   /**
+   * Finds gathering for specified gathering and mantra.
+   *
+   * @param gatheringId Gathering id to find Gathering for
+   * @param mantraId Mantra id to find Gathering for
+   * @return Gathering
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Gathering]
+
+  /**
    * Returns true if gathering with the given name exists, false otherwise.
    *
    * @param name Name of gathering to check existence for

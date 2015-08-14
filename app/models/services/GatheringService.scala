@@ -26,6 +26,15 @@ trait GatheringService {
   def find(): Future[Seq[Gathering]]
 
   /**
+   * Finds gathering for specified gathering and mantra.
+   *
+   * @param gatheringId Gathering id to find Gathering for
+   * @param mantraId Mantra id to find Gathering for
+   * @return Gathering
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Gathering]
+
+  /**
    * Archives gathering specified by given gathering id removing from all find results.
    *
    * @param gatheringId Id of gathering to archive.

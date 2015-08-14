@@ -127,4 +127,12 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
       }
     }
   }
+
+  "Finding a gathering by id and mantra" should "return gathering when found" taggedAs (DbTest) in {
+    cleanInsert("GatheringsDAOSpec")
+
+    whenReady(dao.find(1L, 2L)) { result =>
+      result shouldBe (Gathering(Some(1), UUID.fromString("600ba5de-01ff-4cb5-9b7b-ec4c5521f6e3"), "A gathering", "dedicated to all", false, false, 2015, 8, 12))
+    }
+  }
 }

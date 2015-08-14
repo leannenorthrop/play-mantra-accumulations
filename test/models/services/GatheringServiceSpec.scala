@@ -149,4 +149,16 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
       result shouldBe (goal)
     }
   }
+
+  "Find gathering by id and mantra id" should "delegate to goal dao" taggedAs (ServiceTest) in {
+    val gatheringId = 1L
+    val mantraId = 2L
+    val gathering = Gathering(Some(gatheringId), UUID.randomUUID(), "A Gathering", "A Dedication", false, true, 2015, 8, 1)
+
+    (dao.find(_: Long, _: Long)).expects(gatheringId, mantraId).returning(Future { gathering })
+
+    whenReady(service.find(gatheringId, mantraId)) { result =>
+      result shouldBe (gathering)
+    }
+  }
 }
