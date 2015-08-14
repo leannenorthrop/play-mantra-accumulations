@@ -56,6 +56,19 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
     }
   }
 
+  "Finding Gatherings" should "return empty list when none are found" taggedAs (DbTest) in {
+    whenReady(dao.find()) { found =>
+      found.length shouldBe (0)
+    }
+  }
+
+  it should "only find non-archived gatherings" taggedAs (DbTest) in {
+    cleanInsert("GatheringsDAOSpec")
+    whenReady(dao.find()) { found =>
+      found.length shouldBe (6)
+    }
+  }
+
   "Finding Gatherings by mantra" should "only return Gatherings related to the mantra" taggedAs (DbTest) in {
     cleanInsert("GatheringsDAOSpec")
 

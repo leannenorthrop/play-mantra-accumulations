@@ -19,6 +19,13 @@ trait GatheringService {
   def save(gathering: Gathering): Future[Gathering]
 
   /**
+   * Finds all Gatherings.
+   *
+   * @return Collection of found Gatherings.
+   */
+  def find(): Future[Seq[Gathering]]
+
+  /**
    * Finds Gathering by it's id.
    *
    * @param id Unique id of mantra to find gatherings for

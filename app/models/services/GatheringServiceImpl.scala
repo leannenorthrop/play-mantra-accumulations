@@ -23,6 +23,13 @@ class GatheringServiceImpl @Inject() (dao: GatheringDAO, goalDAO: GoalDAO) exten
   def save(gathering: Gathering): Future[Gathering] = dao.save(gathering)
 
   /**
+   * Finds all Gatherings.
+   *
+   * @return Collection of found Gatherings.
+   */
+  def find(): Future[Seq[Gathering]] = dao.find()
+
+  /**
    * Finds Gathering by it's id.
    *
    * @param id Unique id of mantra to find gatherings for
