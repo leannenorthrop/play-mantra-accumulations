@@ -37,7 +37,7 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
         gatheringService.find() map { gatherings =>
           Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gatherings)))
         } recover {
-          case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
+          case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
         }
       case None => Future.successful(Ok(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
     }
@@ -47,7 +47,18 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
     gatheringService.findByMantra(mantraId) map { gatherings =>
       Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gatherings)))
     } recover {
-      case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
+      case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
+    }
+  }
+
+  def delete(gatheringId: Long) = SecuredAction.async { implicit request =>
+    gatheringService.delete(gatheringId) map { isDeleted =>
+      if (isDeleted)
+        Ok(Json.obj("status" -> "OK", "message" -> "Gathering successfully archived"))
+      else
+        Ok(Json.obj("status" -> "KO", "message" -> "No such gathering."))
+    } recover {
+      case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gathering. " + t.getMessage())))
     }
   }
 
@@ -105,6 +116,14 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
   def findGoal(gatheringId: Long, mantraId: Long) = SecuredAction.async { implicit request =>
     gatheringService.findGoal(gatheringId, mantraId) map { goal =>
       Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(goal)))
+    } recover {
+      case t: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> ("Database error: " + t.getMessage())))
+    }
+  }
+
+  def findGathering(gatheringId: Long, mantraId: Long) = SecuredAction.async { implicit request =>
+    gatheringService.find(gatheringId, mantraId) map { gathering =>
+      Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gathering)))
     } recover {
       case t: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> ("Database error: " + t.getMessage())))
     }
