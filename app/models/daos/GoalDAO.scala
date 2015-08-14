@@ -28,6 +28,15 @@ trait GoalDAO {
   def find(gatheringId: Long): Future[Seq[Goal]]
 
   /**
+   * Finds goals for specified gathering and mantra.
+   *
+   * @param gatheringId Gathering id to find goal for
+   * @param mantraId Mantra id to find goal for
+   * @return List of goals
+   */
+  def find(gatheringId: Long, mantraId: Long): Future[Goal]
+
+  /**
    * Archives a goal but doesn't remove.
    *
    * @param gatheringId Id of goal's gathering

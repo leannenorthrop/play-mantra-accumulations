@@ -73,6 +73,40 @@ class GoalDAOSpec extends DatabaseSpec with Matchers with OptionValues with Befo
     }
   }
 
+  "Finding Goal for a gathering" should "only return goals related to the gathering" taggedAs (DbTest) in {
+    val f = for {
+      _ <- dao.save(Goal(1L, 1L, 10000, false))
+      _ <- dao.save(Goal(1L, 3L, 11000, false))
+      _ <- dao.save(Goal(1L, 4L, 12000, false))
+      _ <- dao.save(Goal(2L, 3L, 13000, false))
+      _ <- dao.save(Goal(2L, 3L, 14000, false))
+      _ <- dao.save(Goal(2L, 3L, 15000, false))
+    } yield ()
+
+    whenReady(f) { _ =>
+      whenReady(dao.find(1L, 3L)) { foundGoal =>
+        foundGoal shouldBe (Goal(1L, 3L, 11000, false))
+      }
+    }
+  }
+
+  it should "fail when not found" taggedAs (DbTest) in {
+    val f = for {
+      _ <- dao.save(Goal(1L, 1L, 10000, false))
+      _ <- dao.save(Goal(1L, 3L, 11000, false))
+      _ <- dao.save(Goal(1L, 4L, 12000, false))
+      _ <- dao.save(Goal(2L, 3L, 13000, false))
+      _ <- dao.save(Goal(2L, 3L, 14000, false))
+      _ <- dao.save(Goal(2L, 3L, 15000, false))
+    } yield ()
+
+    whenReady(f) { _ =>
+      intercept[java.util.NoSuchElementException] {
+        Await.result(dao.find(1L, 120L), Duration(5, SECONDS))
+      }
+    }
+  }
+
   "Deleting a non-existant goal" should "return false" taggedAs (DbTest) in {
     whenReady(dao.delete(-1L, -2L)) { result =>
       result shouldBe (false)

@@ -40,17 +40,18 @@ class GoalDAOImpl extends GoalDAO with DAOSlick {
   }
 
   /**
-   * Finds goals for specified gathering.
+   * Finds goals for specified gathering and mantra.
    *
-   * @param gatheringId Gathering id to find goals for
+   * @param gatheringId Gathering id to find goal for
    * @param mantraId Mantra id to find goal for
    * @return List of goals
    */
   def find(gatheringId: Long, mantraId: Long): Future[Goal] = {
-    db.run(goalsTable.filter(_.gatheringId === gatheringId).result).map {
-      _.map { row =>
+    db.run(goalsTable.filter(_.gatheringId === gatheringId).filter(_.mantraId === mantraId).result).map { result =>
+      val list = result.map { row =>
         Goal(row.gatheringId, row.mantraId, row.goal, (row.isAchieved == 1))
-      }.head
+      }
+      if (list.length > 0) list.head else throw new java.util.NoSuchElementException(s"Goal for gathering ${gatheringId} and mantra ${mantraId} not found.")
     }
   }
 
