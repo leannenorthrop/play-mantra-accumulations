@@ -81,7 +81,9 @@ class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
             case None =>
               Future.failed(new IdentityNotFoundException("Couldn't find user"))
           }
-        }.recoverWith(exceptionHandler)
+        }.recoverWith {
+          case i: IdentityNotFoundException => Future.successful(BadRequest(Json.obj("status" -> "KO", "message" -> "No account is associated with provided details. Please sign up first via web site.")))
+        }
       }
     )
   }
