@@ -12,7 +12,7 @@ CREATE INDEX acc_mantra_year_index ON "accumulations" (y);
 CREATE INDEX acc_mantra_month_index ON "accumulations" (m);
 CREATE INDEX acc_mantra_day_index ON "accumulations" (d);
 
-create table "goals" ("gathering_id" BIGINT NOT NULL, "mantra_id" BIGINT NOT NULL, "goal" INT NOT NULL, is_achieved INT NOT NULL, PRIMARY KEY(gathering_id,mantra_id), FOREIGN KEY (mantra_id) REFERENCES "mantra"("id"), FOREIGN KEY (gathering_id) REFERENCES "gatherings"("id"));
+create table "goals" ("gathering_id" BIGINT NOT NULL, "mantra_id" BIGINT NOT NULL, "goal" INT NOT NULL, is_achieved INT NOT NULL, is_archived INT NOT NULL, PRIMARY KEY(gathering_id,mantra_id), FOREIGN KEY (mantra_id) REFERENCES "mantra"("id"), FOREIGN KEY (gathering_id) REFERENCES "gatherings"("id"));
 
 # --- !Downs
 drop table "goals";
