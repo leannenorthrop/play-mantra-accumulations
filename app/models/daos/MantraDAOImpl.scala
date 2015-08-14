@@ -5,6 +5,8 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.util.{ Try, Success, Failure }
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 /**
  * Mantra Data Access Object implementation using Slick to persist to/from default database.
@@ -70,13 +72,16 @@ class MantraDAOImpl extends MantraDAO with DAOSlick {
    * @return true if deleted false otherwise
    */
   def delete(mantra: Mantra): Future[Boolean] = {
+    val today = Calendar.getInstance.getTime
+    val f = new SimpleDateFormat("dd-MM-YYYY kk:hh:ss")
+
     val id = if (mantra.id == None) -1 else mantra.id.get
-    val dbMantra = MantraRow(id, mantra.name, mantra.description, mantra.imgUrl, mantra.year, mantra.month, mantra.day, 1)
-    val f = db.run(mantrasTable.insertOrUpdate(dbMantra)).map { _ =>
+    val dbMantra = MantraRow(id, s"Archived '${mantra.name}' at ${f.format(today)}", mantra.description, mantra.imgUrl, mantra.year, mantra.month, mantra.day, 1)
+    val f2 = db.run(mantrasTable.insertOrUpdate(dbMantra)).map { _ =>
       true
     } recover {
       case _: Throwable => false
     }
-    f
+    f2
   }
 }

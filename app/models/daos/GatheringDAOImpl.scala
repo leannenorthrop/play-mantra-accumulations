@@ -4,6 +4,8 @@ import models.Gathering
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import java.util.UUID
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 /**
  * Gathering Data Access Object implementation using Slick to persist to/from default database.
@@ -91,26 +93,21 @@ class GatheringDAOImpl extends GatheringDAO with DAOSlick {
   /**
    * 'Delete' gathering. Subsequent finds will not find given gathering.
    *
-   * @param gathering The gathering to hide/delete
+   * @param gatheringId The gathering id to hide/delete
    * @return true if successfully archived
    */
-  def delete(gathering: Gathering): Future[Boolean] = {
-    val id = gathering.id.getOrElse(-1L)
-    val dbRow = GatheringRow(id,
-      gathering.userId.toString(),
-      gathering.name,
-      gathering.dedication,
-      if (gathering.isAchieved) 1 else 0,
-      if (gathering.isPrivate) 1 else 0,
-      1,
-      gathering.year,
-      gathering.month,
-      gathering.day)
-    val actions = (for {
-      result <- (gatheringsTable returning gatheringsTable.map(_.id)).insertOrUpdate(dbRow)
-    } yield result).transactionally
-    db.run(actions).map { id =>
-      true
+  def delete(gatheringId: Long): Future[Boolean] = {
+    val today = Calendar.getInstance.getTime
+    val f = new SimpleDateFormat("dd-MM-YYYY kk:hh:ss")
+
+    val result = for {
+      gathering <- db.run(gatheringsTable.filter(_.id === gatheringId).result)
+      name <- Future { gathering.head.name }
+      _ <- db.run(gatheringsTable.insertOrUpdate(gathering.head.copy(isArchived = 1, name = s"Archived '${name}' at ${f.format(today)}")))
+      done <- Future { true }
+    } yield done
+    result recover {
+      case _: UnsupportedOperationException => false
     }
   }
 }

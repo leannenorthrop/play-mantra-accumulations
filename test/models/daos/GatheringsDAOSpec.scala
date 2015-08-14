@@ -10,6 +10,7 @@ import models.Gathering
 import models.Goal
 import slick.driver.PostgresDriver.api._
 import java.util.UUID
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues with BeforeAndAfter {
@@ -95,23 +96,34 @@ class GatheringsDAOSpec extends DatabaseSpec with Matchers with OptionValues wit
   }
 
   "Deleting an existant Gathering" should "set is achieved to 1" taggedAs (DbTest) in {
-    val gathering = Gathering(None, UUID.randomUUID(), "A gathering", "dedicated to all", false, false, 2015, 8, 12)
-
-    whenReady(dao.save(gathering)) { updatedGathering =>
-      whenReady(dao.delete(updatedGathering)) { isDeleted =>
-        isDeleted shouldBe (true)
-      }
+    cleanInsert("GatheringsDAOSpec")
+    whenReady(dao.delete(1L)) { isDeleted =>
+      isDeleted shouldBe (true)
     }
   }
 
   it should "not be available in find results" taggedAs (DbTest) in {
-    val gathering = Gathering(None, UUID.randomUUID(), "A gathering", "dedicated to all", false, false, 2015, 8, 12)
+    cleanInsert("GatheringsDAOSpec")
+    whenReady(dao.delete(1L)) { isDeleted =>
+      whenReady(dao.find(2L)) { found =>
+        found.length shouldBe (0)
+      }
+    }
+  }
 
-    whenReady(dao.save(gathering)) { updatedGathering =>
-      whenReady(dao.delete(updatedGathering)) { isDeleted =>
-        whenReady(dao.find(1)) { found =>
-          found.length shouldBe (0)
-        }
+  it should "rename mantra to include date archived" taggedAs (DbTest) in {
+    cleanInsert("GatheringsDAOSpec")
+
+    whenReady(dao.delete(1L)) { result =>
+      result shouldBe (true)
+      val f = for {
+        name <- db.run(sql"select name from gatherings where id = 1".as[String])
+      } yield name
+
+      whenReady(f) { name =>
+        val f = new SimpleDateFormat("dd-MM-YYYY kk:hh")
+        val nowStr = f.format(Calendar.getInstance.getTime)
+        assert(name.head.contains(nowStr))
       }
     }
   }

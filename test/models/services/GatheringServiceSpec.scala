@@ -70,6 +70,14 @@ class GatheringServiceSpec extends ServiceSpec with Matchers with BeforeAndAfter
     }
   }
 
+  "Delete" should "delegate to dao" taggedAs (ServiceTest) in {
+    (dao.delete _).expects(1L).returning(Future { true })
+
+    whenReady(service.delete(1L)) { isDeleted =>
+      isDeleted shouldBe (true)
+    }
+  }
+
   "Add goal" should "save goal if it doesn't already exisit" taggedAs (ServiceTest) in {
     val gatheringId = 1L
     val mantraId = 2L

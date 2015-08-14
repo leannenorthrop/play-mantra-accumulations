@@ -8,6 +8,8 @@ import scala.concurrent.duration._
 import scala.concurrent._
 import models.Mantra
 import slick.driver.PostgresDriver.api._
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class MantraDAOSpec extends DatabaseSpec with Matchers with OptionValues with BeforeAndAfter {
   var dao: MantraDAO = null
@@ -90,7 +92,7 @@ class MantraDAOSpec extends DatabaseSpec with Matchers with OptionValues with Be
     }
   }
 
-  "Deleting all mantra" should "hide mantra from findAll" taggedAs (DbTest) in {
+  "Deleting mantra" should "hide mantra from findAll" taggedAs (DbTest) in {
     val f = for {
       _ <- dao.save(Mantra(None, "name1", "description", "http://url", 2015, 8, 19))
       _ <- dao.save(Mantra(None, "name2", "description", "http://url", 2015, 8, 19))
@@ -105,6 +107,32 @@ class MantraDAOSpec extends DatabaseSpec with Matchers with OptionValues with Be
         result shouldBe (true)
         whenReady(dao.findAll()) { foundMantras =>
           foundMantras.length shouldBe (5)
+        }
+      }
+    }
+  }
+
+  it should "rename mantra to include date archived" taggedAs (DbTest) in {
+    val f = for {
+      _ <- dao.save(Mantra(None, "name1", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name2", "description", "http://url", 2015, 8, 19))
+      m <- dao.save(Mantra(None, "name3", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name4", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name5", "description", "http://url", 2015, 8, 19))
+      _ <- dao.save(Mantra(None, "name6", "description", "http://url", 2015, 8, 19))
+    } yield (m)
+
+    whenReady(f) { mantra =>
+      whenReady(dao.delete(mantra)) { result =>
+        result shouldBe (true)
+        val f = for {
+          name <- db.run(sql"select name from mantra where id = ${mantra.id.get}".as[String])
+        } yield name
+
+        whenReady(f) { name =>
+          val f = new SimpleDateFormat("dd-MM-YYYY kk:hh")
+          val nowStr = f.format(Calendar.getInstance.getTime)
+          assert(name.head.contains(nowStr))
         }
       }
     }
