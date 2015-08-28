@@ -20,6 +20,7 @@ import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import modules.RestEnvironment
 import java.util.UUID
 import models.User
+import play.api.libs.json._
 
 class ControllerSpec extends FlatSpec with ScalaFutures with MockFactory with Matchers with BeforeAndAfterAll {
   val app = FakeApplication()
@@ -43,5 +44,30 @@ class ControllerSpec extends FlatSpec with ScalaFutures with MockFactory with Ma
     try {
       super.afterAll()
     } finally Play.stop(app)
+  }
+
+  def testSecured(handler: => Request[AnyContent] => Future[Result]) {
+    val request = FakeRequest() withAuthenticator (LoginInfo("facebook", "someone.else@gmail.com"))
+
+    val future = handler(request)
+    val result = await { future }
+
+    val body = contentAsString(future)
+    body shouldBe ("")
+    result.header.status shouldBe (303)
+  }
+
+  def testInternalServerError(expectedMsg: String, handler: => Request[AnyContent] => Future[Result]) {
+    val request = FakeRequest() withAuthenticator (identity.loginInfo)
+
+    val future = handler(request)
+    val result = await { future }
+
+    val body = contentAsJson(future)
+
+    body shouldBe JsObject(Seq("status" -> JsString("KO"),
+      "message" -> JsString(expectedMsg)))
+
+    result.header.status shouldBe (500)
   }
 }

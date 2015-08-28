@@ -103,10 +103,10 @@ class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
 
         request.authenticator match {
           case Some(auth) => env.authenticatorService.discard(auth, Ok(Json.obj("status" -> "OK", "message" -> "Token expired.")))
-          case None => Future.successful(Ok(Json.obj("status" -> "KO", "message" -> "Token failed to expire due to authenticator not present.")))
+          case None => Future.successful(InternalServerError(Json.obj("status" -> "KO", "message" -> "Token failed to expire due to authenticator not present.")))
         }
 
-      case None => Future.successful(Ok(Json.obj("status" -> "KO", "message" -> "Not logged in.")))
+      case None => Future.successful(Unauthorized(Json.obj("status" -> "KO", "message" -> "Not logged in.")))
     }
   }
 }

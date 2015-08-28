@@ -27,27 +27,23 @@ class MantraRestController @Inject() (val messagesApi: MessagesApi,
 
   val env: Environment[User, JWTAuthenticator] = e.env
 
-  def index = UserAwareAction.async { implicit request =>
-    request.identity match {
-      case Some(user) =>
-        mantraService.findAll() map { mantras =>
-          Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(mantras)))
-        } recover {
-          case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
-        }
-      case None => Future.successful(Ok(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
+  def index = SecuredAction.async { implicit request =>
+    mantraService.findAll() map { mantras =>
+      Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(mantras)))
+    } recover {
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
     }
   }
 
-  def get(id: Long) = UserAwareAction.async { implicit request =>
+  def find(id: Long) = UserAwareAction.async { implicit request =>
     request.identity match {
       case Some(user) =>
         mantraService.find(id) map { mantra =>
           Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(mantra)))
         } recover {
-          case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
+          case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
         }
-      case None => Future.successful(Ok(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
+      case None => Future.successful(Unauthorized(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
     }
   }
 
@@ -63,11 +59,11 @@ class MantraRestController @Inject() (val messagesApi: MessagesApi,
             mantraService.save(mantra) map { savedMantraOption =>
               Ok(Json.obj("status" -> "OK", "message" -> ("Mantra '" + savedMantraOption.name + "' saved with id '" + savedMantraOption.id.get + "'.")))
             } recover {
-              case _: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
+              case _: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
             }
           }
         )
-      case None => Future.successful(Ok(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
+      case None => Future.successful(Unauthorized(Json.toJson(Json.obj("status" -> "KO", "message" -> "Can not save mantra as you are not logged on. Login!"))))
     }
   }
 }

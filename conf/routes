@@ -25,7 +25,7 @@ GET         /accumulation                    controllers.AccumulationController.
 POST        /auth/signin/credentials                          controllers.rest.CredentialsAuthRestController.authenticate
 POST        /auth/signout                                     controllers.rest.CredentialsAuthRestController.signOut
 GET         /api/mantra                                       controllers.rest.MantraRestController.index
-GET         /api/mantra/:id                                   controllers.rest.MantraRestController.get(id:Long)
+GET         /api/mantra/:id                                   controllers.rest.MantraRestController.find(id:Long)
 POST        /api/mantra                                       controllers.rest.MantraRestController.save
 GET         /api/gatherings                                   controllers.rest.GatheringRestController.index
 POST        /api/gatherings                                   controllers.rest.GatheringRestController.save

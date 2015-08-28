@@ -31,15 +31,11 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
 
   val env: Environment[User, JWTAuthenticator] = e.env
 
-  def index = UserAwareAction.async { implicit request =>
-    request.identity match {
-      case Some(user) =>
-        gatheringService.find() map { gatherings =>
-          Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gatherings)))
-        } recover {
-          case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
-        }
-      case None => Future.successful(Ok(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
+  def index = SecuredAction.async { implicit request =>
+    gatheringService.find() map { gatherings =>
+      Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gatherings)))
+    } recover {
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
     }
   }
 
@@ -47,7 +43,7 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
     gatheringService.findByMantra(mantraId) map { gatherings =>
       Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gatherings)))
     } recover {
-      case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find gatherings. " + t.getMessage())))
     }
   }
 
@@ -56,9 +52,9 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
       if (isDeleted)
         Ok(Json.obj("status" -> "OK", "message" -> "Gathering successfully archived"))
       else
-        Ok(Json.obj("status" -> "KO", "message" -> "No such gathering."))
+        NotFound(Json.obj("status" -> "KO", "message" -> "No such gathering."))
     } recover {
-      case t: Throwable => NotFound(Json.obj("status" -> "KO", "message" -> ("Unable to find gathering. " + t.getMessage())))
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to delete gathering. " + t.getMessage())))
     }
   }
 
@@ -77,7 +73,7 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
         gatheringService.save(gathering) map { savedGathering =>
           Ok(Json.obj("status" -> "OK", "message" -> ("Gathering '" + savedGathering.name + "' saved with id '" + savedGathering.id.get + "'.")))
         } recover {
-          case _: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new gathering that already exists? Please refresh to get latest gatherings."))
+          case _: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new gathering that already exists? Please refresh to get latest gatherings."))
         }
       }
     )
@@ -94,9 +90,9 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
           if (isSaved)
             Ok(Json.obj("status" -> "OK", "message" -> ("Gathering goal was saved.")))
           else
-            Ok(Json.obj("status" -> "KO", "message" -> ("Gathering goal was not saved. Already exists?")))
+            BadRequest(Json.obj("status" -> "KO", "message" -> ("Gathering goal was not saved. Already exists?")))
         } recover {
-          case _: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new gathering goal that already exists? Please refresh to get latest goals."))
+          case _: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new gathering goal that already exists? Please refresh to get latest goals."))
         }
       }
     )
@@ -107,9 +103,9 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
       if (isComplete)
         Ok(Json.obj("status" -> "OK", "message" -> ("Gathering goal was deleted.")))
       else
-        Ok(Json.obj("status" -> "KO", "message" -> ("Gathering goal was not deleted. Did it exist?")))
+        BadRequest(Json.obj("status" -> "KO", "message" -> ("Gathering goal was not deleted. Did it exist?")))
     } recover {
-      case t: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> ("Database error: Trying to delete gathering goal. " + t.getMessage())))
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Database error: Trying to delete gathering goal. " + t.getMessage())))
     }
   }
 
@@ -117,7 +113,7 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
     gatheringService.findGoal(gatheringId, mantraId) map { goal =>
       Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(goal)))
     } recover {
-      case t: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> ("Database error: " + t.getMessage())))
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find goal: " + t.getMessage())))
     }
   }
 
@@ -125,7 +121,7 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
     gatheringService.find(gatheringId, mantraId) map { gathering =>
       Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(gathering)))
     } recover {
-      case t: Throwable => BadRequest(Json.obj("status" -> "KO", "message" -> ("Database error: " + t.getMessage())))
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find gathering: " + t.getMessage())))
     }
   }
 }
