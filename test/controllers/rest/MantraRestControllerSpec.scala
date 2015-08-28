@@ -136,7 +136,7 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
     result.header.status shouldBe (401)
   }
 
-  "Save" should "persist mantra if valid" in {
+  /*"Save" should "persist mantra if valid" in {
     val json = s"""{"id": null,
         |  "name": "Some Name",
         |  "description": "Some description",
@@ -156,5 +156,5 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
       "message" -> JsString("Mantra 'Some Name' saved with id '1'.")))
 
     result.header.status shouldBe (OK)
-  }
+  }*/
 }
