@@ -45,7 +45,7 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
 
     val playDb = playDB(app, dbName)
     Evolutions.applyEvolutions(playDb)
-
+    playDb.shutdown
     super.beforeAll() // To be stackable, must call super.beforeEach
   }
 
@@ -55,7 +55,11 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
 
       val playDb = playDB(app, dbName)
       Evolutions.cleanupEvolutions(playDb)
-    } finally Play.stop(app)
+      playDb.shutdown
+    } finally {
+      db.close
+      Play.stop(app)
+    }
   }
 
   def getDataSet(name: String): org.dbunit.dataset.IDataSet = {
@@ -64,13 +68,15 @@ trait Database extends BeforeAndAfterAll with ScalaFutures { this: Suite =>
   }
 
   def cleanInsert(name: String): Unit = {
-    val connection = new org.dbunit.database.DatabaseConnection(db.createSession.conn)
+    val session = db.createSession
+    val connection = new org.dbunit.database.DatabaseConnection(session.conn)
     val dataSet = getDataSet(name)
 
     try {
       org.dbunit.operation.DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet)
     } finally {
-      connection.close()
+      connection.close
+      //session.close
     }
   }
 }
