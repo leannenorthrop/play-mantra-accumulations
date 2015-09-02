@@ -287,6 +287,50 @@ class GatheringRestControllerSpec extends ControllerSpec with BeforeAndAfter {
     val result = await { future }
 
     result.header.status shouldBe (400)
-    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "JSON error", "errors" -> JsArray(Seq(JsString("/isPrivate: Is missing"), JsString("/dedication: Minimum length is 2"), JsString("/name: Minimum length is 2"))))
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "JSON errors", "errors" -> JsArray(Seq(JsString("/isPrivate: Is missing"), JsString("/dedication: Minimum length is 2"), JsString("/name: Minimum length is 2"))))
+  }
+
+  "Save goal" should "delegate to gathering service" in {
+    val goal = Goal(1L, 2L, 3L, false)
+    val json = s"""{"gatheringId": 1,
+        |  "mantraId": 2,
+        |  "goal": 3,
+        |  "isAchieved": false
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    (gatheringService.add _).expects(goal).returning(Future { true })
+
+    val future = controller.addGoal(1L, 2L)(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (OK)
+    contentAsJson(future) shouldBe Json.obj("status" -> "OK", "message" -> "Gathering goal was saved.")
+  }
+
+  it should "return error message if not authenticated" in {
+    testSecuredJson(controller.addGoal(1L, 2L)(_))
+  }
+
+  it should "return errors if invalid json provided" in {
+    val json = s"""{"gatheringId": 1,
+        |  "mantraId": 2,
+        |  "isAchieved": 4
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    val future = controller.addGoal(1L, 2L)(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (400)
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "JSON errors", "errors" -> JsArray(Seq(JsString("/isAchieved: Boolean value expected"), JsString("/goal: Is missing"))))
   }
 }
