@@ -67,7 +67,12 @@ class GatheringRestController @Inject() (val messagesApi: MessagesApi,
     val gathering = request.body.validate[Gathering]
     gathering.fold(
       errors => {
-        Future { BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))) }
+        val str = errors.map {
+          case (path, seq) => "" + path + seq.map { e =>
+            Messages(e.message, e.args: _*)
+          }.foldLeft("")(_ + ": " + _)
+        }
+        Future { BadRequest(Json.obj("status" -> "KO", "message" -> "JSON error", "errors" -> str)) }
       },
       gathering => {
         gatheringService.save(gathering) map { savedGathering =>

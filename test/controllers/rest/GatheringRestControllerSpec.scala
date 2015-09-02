@@ -233,4 +233,60 @@ class GatheringRestControllerSpec extends ControllerSpec with BeforeAndAfter {
 
     testInternalServerError("Unable to find gathering: Something bad happened", controller.findGathering(1L, 2L)(_))
   }
+
+  "Save gathering" should "delegate to gathering service" in {
+    val uuid = UUID.randomUUID()
+    val gathering = Gathering(None, uuid, "Some name", "Some dedication", false, false, 2015, 8, 16)
+    val json = s"""{"id": null,
+        |  "owner": "${uuid.toString()}",
+        |  "name": "Some name",
+        |  "dedication": "Some dedication",
+        |  "isAchieved": false,
+        |  "isPrivate": false,
+        |  "year" : 2015,
+        |  "month" : 8,
+        |  "day" : 16
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    (gatheringService.save _).expects(gathering).returning(Future { gathering.copy(id = Some(9)) })
+
+    val future = controller.save()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (OK)
+    contentAsJson(future) shouldBe Json.obj("status" -> "OK", "message" -> "Gathering 'Some name' saved with id '9'.")
+  }
+
+  it should "return error message if not authenticated" in {
+    testSecuredJson(controller.save()(_))
+  }
+
+  it should "return error messages if invalid json provided" in {
+    val uuid = UUID.randomUUID()
+    val json = s"""{"id": null,
+        |  "owner": "${uuid.toString()}",
+        |  "name": "S",
+        |  "dedication": "S",
+        |  "isAchieved": false,
+        |  "year" : 2015,
+        |  "month" : 8,
+        |  "day" : 16
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    val future = controller.save()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (400)
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "JSON error", "errors" -> JsArray(Seq(JsString("/isPrivate: Is missing"), JsString("/dedication: Minimum length is 2"), JsString("/name: Minimum length is 2"))))
+  }
 }
