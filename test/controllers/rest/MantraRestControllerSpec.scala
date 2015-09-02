@@ -28,6 +28,7 @@ import play.api.libs.json._
 class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
   val service: MantraService = mock[MantraService]
   var controller: MantraRestController = null
+  var controller2: MantraRestController = null
   val injector = new GuiceInjectorBuilder()
     .bindings(Seq(bind[MantraService].toInstance(service),
       bind[RestEnvironment].toInstance(RestEnvironment(env)),
@@ -136,7 +137,8 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
     result.header.status shouldBe (401)
   }
 
-  /*"Save" should "persist mantra if valid" in {
+  "Save" should "persist mantra if valid" in {
+    val mantra = Mantra(None, "Some Name", "Some description", "http://bbc.co.uk", 2015, 8, 16)
     val json = s"""{"id": null,
         |  "name": "Some Name",
         |  "description": "Some description",
@@ -146,15 +148,18 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
         |  "day" : 16
         |}""".stripMargin
     val jsonBody = Json.parse(json)
-    var req = FakeRequest().withJsonBody(jsonBody).withAuthenticator(identity.loginInfo)
 
-    val future = controller.save()(req).run
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    (service.save _).expects(mantra).returning(Future { mantra.copy(id = Some(9)) })
+
+    val future = controller.save()(fr)
     val result = await { future }
 
-    val body = contentAsJson(future)
-    body shouldBe JsObject(Seq("status" -> JsString("OK"),
-      "message" -> JsString("Mantra 'Some Name' saved with id '1'.")))
-
+    println(contentAsString(future))
     result.header.status shouldBe (OK)
-  }*/
+    contentAsJson(future) shouldBe Json.obj("status" -> "OK", "message" -> "Mantra 'Some Name' saved with id '9'.")
+  }
 }
