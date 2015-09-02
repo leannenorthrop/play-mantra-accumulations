@@ -126,15 +126,7 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
   }
 
   it should "return error message if not authenticated" in {
-    val request = FakeRequest("GET", "/api/mantra/9") withAuthenticator (LoginInfo("facebook", "someone.else@gmail.com"))
-
-    val future = controller.find(9L)(request)
-    val result = await { future }
-
-    val body = contentAsJson(future)
-    body shouldBe JsObject(Seq("status" -> JsString("KO"),
-      "message" -> JsString("You are not logged! Login!")))
-    result.header.status shouldBe (401)
+    testSecured(controller.find(9L)(_))
   }
 
   "Save" should "persist mantra if valid" in {
@@ -158,8 +150,46 @@ class MantraRestControllerSpec extends ControllerSpec with BeforeAndAfter {
     val future = controller.save()(fr)
     val result = await { future }
 
-    println(contentAsString(future))
     result.header.status shouldBe (OK)
     contentAsJson(future) shouldBe Json.obj("status" -> "OK", "message" -> "Mantra 'Some Name' saved with id '9'.")
+  }
+
+  it should "return error message if not authenticated" in {
+    testSecuredJson(controller.save()(_))
+  }
+
+  it should "return an error if unable to save mantra" in {
+    val mantra = Mantra(None, "Some Name", "Some description", "http://bbc.co.uk", 2015, 8, 16)
+    val json = s"""{"id": null,
+        |  "name": "Some Name",
+        |  "description": "Some description",
+        |  "imgUrl": "http://bbc.co.uk",
+        |  "year" : 2015,
+        |  "month" : 8,
+        |  "day" : 16
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+    (service.save _).expects(mantra).returning(Future { throw new IllegalArgumentException("Some error") })
+    testJsonInternalServerError(jsonBody, "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras.", controller.save()(_))
+  }
+
+  it should "return error if json body is not valid" in {
+    val json = s"""{"id": null,
+        |  "name": "S",
+        |  "year" : 2015,
+        |  "month" : 8,
+        |  "day" : 16
+        |}""".stripMargin
+    val jsonBody = Json.parse(json)
+
+    val fr = FakeRequest()
+      .withAuthenticator(identity.loginInfo)
+      .withBody(jsonBody)
+
+    val future = controller.save()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (400)
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "Json errors.", "errors" -> JsArray(Seq(JsString("/description: Is missing"), JsString("/imgUrl: Is missing"), JsString("/name: Minimum length is 2"))))
   }
 }

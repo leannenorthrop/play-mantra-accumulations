@@ -35,35 +35,34 @@ class MantraRestController @Inject() (val messagesApi: MessagesApi,
     }
   }
 
-  def find(id: Long) = UserAwareAction.async { implicit request =>
-    request.identity match {
-      case Some(user) =>
-        mantraService.find(id) map { mantra =>
-          Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(mantra)))
-        } recover {
-          case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
-        }
-      case None => Future.successful(Unauthorized(Json.toJson(Json.obj("status" -> "KO", "message" -> "You are not logged! Login!"))))
+  def find(id: Long) = SecuredAction.async { implicit request =>
+    mantraService.find(id) map { mantra =>
+      Ok(Json.obj("status" -> "OK", "message" -> Json.toJson(mantra)))
+    } recover {
+      case t: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> ("Unable to find mantra. " + t.getMessage())))
     }
   }
 
-  def save = UserAwareAction.async(BodyParsers.parse.json) { implicit request =>
-    request.identity match {
-      case Some(user) =>
-        val mantraResult = request.body.validate[Mantra]
-        mantraResult.fold(
-          errors => {
-            Future { BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))) }
-          },
-          mantra => {
-            mantraService.save(mantra) map { savedMantraOption =>
-              Ok(Json.obj("status" -> "OK", "message" -> ("Mantra '" + savedMantraOption.name + "' saved with id '" + savedMantraOption.id.get + "'.")))
-            } recover {
-              case _: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
-            }
-          }
-        )
-      case None => Future.successful(Unauthorized(Json.toJson(Json.obj("status" -> "KO", "message" -> "Can not save mantra as you are not logged on. Login!"))))
+  def save = SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+    val mantraResult = request.body.validate[Mantra]
+    mantraResult match {
+      case e: JsError => {
+        val str = e.errors.map {
+          case (path, seq) => "" + path + seq.map { e =>
+            Messages(e.message, e.args: _*)
+          }.foldLeft("")(_ + ": " + _)
+        }
+
+        Future { BadRequest(Json.obj("status" -> "KO", "message" -> "Json errors.", "errors" -> str)) }
+      }
+      case s: JsSuccess[Mantra] => {
+        val mantra = s.get
+        mantraService.save(mantra) map { savedMantraOption =>
+          Ok(Json.obj("status" -> "OK", "message" -> ("Mantra '" + savedMantraOption.name + "' saved with id '" + savedMantraOption.id.get + "'.")))
+        } recover {
+          case _: Throwable => InternalServerError(Json.obj("status" -> "KO", "message" -> "Database error: Trying to create a new mantra that already exists? Please refresh to get latest mantras."))
+        }
+      }
     }
   }
 }

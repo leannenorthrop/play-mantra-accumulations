@@ -33,7 +33,7 @@ class ControllerSpec extends FlatSpec with ScalaFutures with MockFactory with Ma
     None)
 
   implicit val env = FakeEnvironment[User, JWTAuthenticator](Seq(identity.loginInfo -> identity))
-  val msgApi = new play.api.i18n.DefaultMessagesApi(play.api.Environment(app.path, app.classloader, app.mode), app.configuration, new play.api.i18n.DefaultLangs(app.configuration))
+  val msgApi = app.injector.instanceOf[play.api.i18n.MessagesApi]
 
   override def beforeAll() {
     Play.start(app)
@@ -57,8 +57,33 @@ class ControllerSpec extends FlatSpec with ScalaFutures with MockFactory with Ma
     result.header.status shouldBe (303)
   }
 
+  def testSecuredJson(handler: => Request[play.api.libs.json.JsValue] => Future[Result]) {
+    val request = FakeRequest().withAuthenticator(LoginInfo("facebook", "someone.else@gmail.com")).withBody(Json.obj("test" -> "test"))
+
+    val future = handler(request)
+    val result = await { future }
+
+    val body = contentAsString(future)
+    body shouldBe ("")
+    result.header.status shouldBe (303)
+  }
+
   def testInternalServerError(expectedMsg: String, handler: => Request[AnyContent] => Future[Result]) {
     val request = FakeRequest() withAuthenticator (identity.loginInfo)
+
+    val future = handler(request)
+    val result = await { future }
+
+    val body = contentAsJson(future)
+
+    body shouldBe JsObject(Seq("status" -> JsString("KO"),
+      "message" -> JsString(expectedMsg)))
+
+    result.header.status shouldBe (500)
+  }
+
+  def testJsonInternalServerError(jsonBody: play.api.libs.json.JsValue, expectedMsg: String, handler: => Request[play.api.libs.json.JsValue] => Future[Result]) {
+    val request = FakeRequest().withAuthenticator(identity.loginInfo).withBody(jsonBody)
 
     val future = handler(request)
     val result = await { future }
