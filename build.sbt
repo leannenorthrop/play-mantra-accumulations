@@ -76,4 +76,4 @@ javaOptions in Test += "-Dconfig.resource=test.conf"
 
 scalariformSettings
 
-//skip in update := true
+skip in update := true

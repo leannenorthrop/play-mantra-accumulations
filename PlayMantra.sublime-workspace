@@ -3,15 +3,163 @@
 	{
 		"selected_items":
 		[
+			[
+				"req",
+				"request"
+			],
+			[
+				"lo",
+				"loginInfo"
+			],
+			[
+				"json",
+				"jsonBody"
+			],
+			[
+				"cont",
+				"contentAsString"
+			],
+			[
+				"wit",
+				"withAuthenticator"
+			],
+			[
+				"retu",
+				"returning"
+			],
+			[
+				"find",
+				"findAll"
+			],
+			[
+				"id",
+				"identity"
+			],
+			[
+				"wi",
+				"withAuthenticator"
+			],
+			[
+				"gatheri",
+				"gatheringId"
+			],
+			[
+				"dele",
+				"delegate"
+			],
+			[
+				"mantra",
+				"mantraId"
+			],
+			[
+				"ex",
+				"expects"
+			],
+			[
+				"gather",
+				"gatheringId"
+			],
+			[
+				"goal",
+				"goalDAO"
+			],
+			[
+				"ma",
+				"mantraID"
+			],
+			[
+				"g",
+				"gatheringID"
+			],
+			[
+				"shou",
+				"shouldBe"
+			],
+			[
+				"re",
+				"returning"
+			],
+			[
+				"whe",
+				"whenReady"
+			],
+			[
+				"ins",
+				"insertOrUpdate"
+			],
+			[
+				"get",
+				"getDataSet"
+			],
+			[
+				"gat",
+				"gatheringId"
+			],
+			[
+				"sav",
+				"savingMantras"
+			],
+			[
+				"T",
+				"Throwable"
+			],
+			[
+				"a",
+				"async"
+			],
+			[
+				"is",
+				"isDeleted"
+			],
+			[
+				"up",
+				"updatedGathering"
+			],
+			[
+				"ga",
+				"gatheringId"
+			],
+			[
+				"mant",
+				"mantraId"
+			],
+			[
+				"Ga",
+				"GatheringDAOImpl"
+			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"contents": "",
+			"file": "app/controllers/rest/CredentialsAuthRestController.scala",
 			"settings":
 			{
-				"buffer_size": 0,
+				"buffer_size": 4638,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
+			"settings":
+			{
+				"buffer_size": 4809,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "build.sbt",
+			"settings":
+			{
+				"buffer_size": 3487,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test/controllers/rest/GatheringRestControllerSpec.scala",
+			"settings":
+			{
+				"buffer_size": 12074,
 				"line_ending": "Unix"
 			}
 		}
@@ -23,10 +171,26 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 359.0,
-		"last_filter": "pack",
+		"height": 392.0,
+		"last_filter": "col",
 		"selected_items":
 		[
+			[
+				"col",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"in",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"lin",
+				"SublimeLinter: Lint This View"
+			],
+			[
+				"pa",
+				"Package Control: Install Package"
+			],
 			[
 				"pack",
 				"Package Control: Install Package"
@@ -36,7 +200,7 @@
 				"Colorsublime: Install Theme"
 			]
 		],
-		"width": 504.0
+		"width": 467.0
 	},
 	"console":
 	{
@@ -57,20 +221,108 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/leanne/Development/scala/play-mantra-accumulations"
+		"/Users/leanne/Development/scala/play-mantra-accumulations",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/conf",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos"
 	],
 	"file_history":
 	[
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/ControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/User.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/GatheringRestControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/test.conf",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/env.sh",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/MantraRestController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/MantraRestControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/Goal.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/GatheringRestController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/Gathering.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/Mantra.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/messages",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/MantraDAOSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/DatabaseSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/routes",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/modules/SilhouetteModule.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/CredentialsAuthRestController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/MantraController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/build.sbt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/AccumulationServiceSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/GatheringServiceSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/GatheringService.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/GatheringServiceImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/MantraDAOImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/GatheringDAOImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/GatheringDAO.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/GatheringsDAOSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/TODO.md",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/project/plugins.sbt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/AccumulationDAOSpec/gatherings.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/evolutions/default/2.sql",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/GatheringsDAOSpec/gatherings.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/GatheringsDAOSpec/goals.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/GoalDAOImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/GoalDAOSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/GoalDAO.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/DBTableDefinitions.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/ApplicationController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/RestController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/Token.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/CredentialsAuthController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/modules/HeaderEnvironmentModule.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/modules/HeaderAuthenticatorServiceModule.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/AccumulationDAOImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/README.md",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/UserServiceImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/UserService.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/MantraService.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/AccumulationService.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/AccumulationServiceImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/ServiceSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/MantraSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/MantraServiceImpl.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/MantraDAO.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/AccumulationDAOSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/target/scala-2.11/classes/evolutions/default/2.sql",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/AccumulationDAOSpec/table-ordering.txt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/GatheringsDAOSpec/table-ordering.txt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/GoalDAOSpec/table-ordering.txt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/GoalDAOSpec/mantra.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/set2/gatherings.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/set2/goals.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/set2/mantra.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/table-ordering.txt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/target/scala-2.11/test-classes/data/table-ordering.txt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/mantra_1.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/TEST.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/goals_1.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/gathering_1.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/accumulations_1.csv",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/resources/data/accumulations.xml",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/Accumulation.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/AccumulationController.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/AccumulationDAO.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/daos/DAOSlick.scala",
+		"/Users/leanne/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 23.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			""
 		]
 	},
 	"find_state":
@@ -78,6 +330,10 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"MantraRestController",
+			"recoverWith",
+			" authenticator.authenticatorIdleTimeout",
+			"silhouette.authenticator.authenticatorIdleTimeout"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -95,35 +351,127 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
+					"file": "app/controllers/rest/CredentialsAuthRestController.scala",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 0,
+						"buffer_size": 4638,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1208,
+								1157
 							]
 						],
 						"settings":
 						{
-							"auto_name": "",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
+							"syntax": "Packages/Scala/Scala.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4809,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4801,
+								4801
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Scala/Scala.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 192.0,
+						"translation.y": 1137.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "build.sbt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3487,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3464,
+								3464
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Scala/Scala.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 406.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "test/controllers/rest/GatheringRestControllerSpec.scala",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12074,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11935,
+								11877
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Scala/Scala.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3284.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -131,11 +479,11 @@
 	],
 	"incremental_find":
 	{
-		"height": 0.0
+		"height": 23.0
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 31.0
 	},
 	"layout":
 	{
@@ -168,7 +516,7 @@
 	"project": "PlayMantra.sublime-project",
 	"replace":
 	{
-		"height": 0.0
+		"height": 42.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -206,7 +554,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 215.0,
+	"side_bar_width": 300.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

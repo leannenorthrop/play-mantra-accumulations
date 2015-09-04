@@ -69,7 +69,12 @@ class CredentialsAuthRestController @Inject() (val messagesApi: MessagesApi,
     val credentialsResult = request.body.validate[Credentials]
     credentialsResult.fold(
       errors => {
-        Future { BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))) }
+        val str = errors.map {
+          case (path, seq) => "" + path + seq.map { e =>
+            Messages(e.message, e.args: _*)
+          }.foldLeft("")(_ + ": " + _)
+        }
+        Future { BadRequest(Json.obj("status" -> "KO", "message" -> "Invalid JSON", "errors" -> str)) }
       },
       credentials => {
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>

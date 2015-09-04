@@ -25,6 +25,8 @@ import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
 import modules.RestEnvironment
 import play.api.mvc.{ Action, BodyParsers }
 import play.api.libs.json._
+import com.mohiva.play.silhouette.api.util.{ Credentials }
+import com.mohiva.play.silhouette.impl.exceptions._
 
 class MockableCredentialsProvider extends CredentialsProvider(null, null, null)
 
@@ -68,5 +70,60 @@ class CredentialsAuthRestControllerSpec extends ControllerSpec with BeforeAndAft
     body shouldBe JsObject(Seq("status" -> JsString("KO"),
       "message" -> JsString("Not logged in.")))
     result.header.status shouldBe (401)
+  }
+
+  "Sign in" should "authenticate valid user pre-registered" in {
+    val json = s"""{
+    |  "identifier" : "apollonia.vanova@watchmen.com",
+    |  "password" : "password"
+    |}""".stripMargin
+    val jsonBody = Json.parse(json)
+    val fr = FakeRequest().withBody(jsonBody)
+    val li = LoginInfo("facebook", "apollonia.vanova@watchmen.com")
+    val user = User(UUID.randomUUID(), li, Some("apollonia"), Some("Vanova"), Some(""), Some("apollonia.vanova@watchmen.com"), None)
+
+    (provider.authenticate _).expects(Credentials("apollonia.vanova@watchmen.com", "password")).returning(Future { li })
+    (service.retrieve _).expects(li).returning(Future { Some(user) })
+
+    val future = controller.authenticate()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (OK)
+  }
+
+  it should "return BadRequest if user is unknown" in {
+    val json = s"""{
+    |  "identifier" : "apollonia.vanova@watchmen.com",
+    |  "password" : "password"
+    |}""".stripMargin
+    val jsonBody = Json.parse(json)
+    val fr = FakeRequest().withBody(jsonBody)
+    val li = LoginInfo("facebook", "apollonia.vanova@watchmen.com")
+
+    (provider.authenticate _).expects(Credentials("apollonia.vanova@watchmen.com", "password")).returning(Future { li })
+    (service.retrieve _).expects(li).returning(Future { None })
+
+    val future = controller.authenticate()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (400)
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "No account is associated with provided details. Please sign up first via web site.")
+  }
+
+  it should "return BadRequest if password is incorrect" in {
+    val json = s"""{
+    |  "identifier" : "apollonia.vanova@watchmen.com",
+    |  "password" : "password"
+    |}""".stripMargin
+    val jsonBody = Json.parse(json)
+    val fr = FakeRequest().withBody(jsonBody)
+
+    (provider.authenticate _).expects(Credentials("apollonia.vanova@watchmen.com", "password")).returning(Future { throw new InvalidPasswordException("") })
+
+    val future = controller.authenticate()(fr)
+    val result = await { future }
+
+    result.header.status shouldBe (400)
+    contentAsJson(future) shouldBe Json.obj("status" -> "KO", "message" -> "Invalid password.")
   }
 }
