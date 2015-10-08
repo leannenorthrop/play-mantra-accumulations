@@ -6,6 +6,9 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
 
+//skip in update := true
+offline := true
+
 libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette" % "3.0.0",
   "org.webjars" %% "webjars-play" % "2.4.0",
@@ -75,5 +78,3 @@ ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages := ".*DBTableDefinitio
 javaOptions in Test += "-Dconfig.resource=test.conf"
 
 scalariformSettings
-
-skip in update := true
