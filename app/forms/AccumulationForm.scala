@@ -17,7 +17,8 @@ object AccumulationForm {
     "day" -> number(min = 1, max = 31),
     "count" -> longNumber(min = 1),
     "mantraId" -> longNumber,
-    "userId" -> text
+    "userId" -> text,
+    "gatheringId" -> longNumber
   )(AccumulationFormData.apply)(AccumulationFormData.unapply)
   )
 
@@ -26,5 +27,6 @@ object AccumulationForm {
     day: Int,
     count: Long,
     mantraId: Long,
-    userId: String)
+    userId: String,
+    gatheringId: Long)
 }

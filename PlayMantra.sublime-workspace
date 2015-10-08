@@ -131,38 +131,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "app/controllers/rest/CredentialsAuthRestController.scala",
-			"settings":
-			{
-				"buffer_size": 4638,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
-			"settings":
-			{
-				"buffer_size": 4809,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "build.sbt",
-			"settings":
-			{
-				"buffer_size": 3487,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "test/controllers/rest/GatheringRestControllerSpec.scala",
-			"settings":
-			{
-				"buffer_size": 12074,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -221,9 +189,7 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/leanne/Development/scala/play-mantra-accumulations",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app",
-		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/conf",
@@ -235,9 +201,12 @@
 	],
 	"file_history":
 	[
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/GatheringRestControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/build.sbt",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
+		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/CredentialsAuthRestController.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/ControllerSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/User.scala",
-		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/GatheringRestControllerSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/test.conf",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/env.sh",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/MantraRestController.scala",
@@ -251,10 +220,7 @@
 		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/daos/DatabaseSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/conf/routes",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/modules/SilhouetteModule.scala",
-		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/rest/CredentialsAuthRestController.scala",
-		"/Users/leanne/Development/scala/play-mantra-accumulations/test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/controllers/MantraController.scala",
-		"/Users/leanne/Development/scala/play-mantra-accumulations/build.sbt",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/AccumulationServiceSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/test/models/services/GatheringServiceSpec.scala",
 		"/Users/leanne/Development/scala/play-mantra-accumulations/app/models/services/GatheringService.scala",
@@ -351,129 +317,8 @@
 	"groups":
 	[
 		{
-			"selected": 2,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "app/controllers/rest/CredentialsAuthRestController.scala",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4638,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1208,
-								1157
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "test/controllers/rest/CredentialsAuthRestControllerSpec.scala",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4809,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4801,
-								4801
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 192.0,
-						"translation.y": 1137.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "build.sbt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3487,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3464,
-								3464
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 406.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "test/controllers/rest/GatheringRestControllerSpec.scala",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 12074,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								11935,
-								11877
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3284.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				}
 			]
 		}
 	],

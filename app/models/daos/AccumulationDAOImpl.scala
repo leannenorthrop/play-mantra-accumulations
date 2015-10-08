@@ -26,6 +26,7 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
    * @return Updated accumulation with updated id if supplied accumulation id was None
    */
   def save(accumulation: Accumulation): Future[Accumulation] = {
+    println(accumulation)
     val id = accumulation.id.getOrElse(-1L)
     val dbAccumulationRow = AccumulationRow(id, accumulation.mantraId, accumulation.userId.toString(), accumulation.gatheringId, accumulation.count, accumulation.year, accumulation.month, accumulation.day)
     val actions = (for {
@@ -66,6 +67,9 @@ class AccumulationDAOImpl extends AccumulationDAO with DAOSlick {
         mantra.map(accumulation.mantraId === _)
       ).collect({ case Some(criteria) => criteria }).reduceLeftOption(_ && _).getOrElse(true: Rep[Boolean])
     }
+
+    println("Running query")
+    db.run(query.result.head).map(row => println(row.count))
 
     db.run(query.result.head).map(row =>
       models.Accumulation(Some(row.id), row.year, row.month, row.day, row.count, row.mantraId, UUID.fromString(row.userId), row.gatheringId)

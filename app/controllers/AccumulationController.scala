@@ -37,21 +37,25 @@ class AccumulationController @Inject() (
     AccumulationForm.form.bindFromRequest.fold(
       formWithErrors => {
         accumulationService.counts(1).map { c =>
+          println("1. c = " + c)
           Ok(views.html.accumulation_form(Some(securedRequest.identity), formWithErrors, socialProviderRegistry, c))
         } recover {
-          case e: Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), formWithErrors, socialProviderRegistry, (0L, 0L, 0L, 0L)))
+          case e: Throwable => println("2."); e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), formWithErrors, socialProviderRegistry, (0L, 0L, 0L, 0L)))
         }
       },
       accumulationFormData => {
         val uid = UUID.fromString(accumulationFormData.userId)
+        println(accumulationFormData.count)
+        println(accumulationFormData)
         for {
-          acc <- accumulationService.findOrCreateForToday(uid, -1, accumulationFormData.mantraId)
+          acc <- accumulationService.findOrCreateForToday(uid, accumulationFormData.gatheringId, accumulationFormData.mantraId)
           _ <- accumulationService.save(acc.copy(count = acc.count + accumulationFormData.count)) if acc != null
-        } yield ()
+        } yield (acc)
         accumulationService.counts(1).map { c =>
+          println("3. c = " + c)
           Ok(views.html.accumulation_form(Some(securedRequest.identity), AccumulationForm.form, socialProviderRegistry, c))
         } recover {
-          case e: Throwable => e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), AccumulationForm.form, socialProviderRegistry, (0L, 0L, 0L, 0L)))
+          case e: Throwable => println("4."); e.printStackTrace(); Ok(views.html.accumulation_form(Some(securedRequest.identity), AccumulationForm.form, socialProviderRegistry, (0L, 0L, 0L, 0L)))
         }
       }
     )

@@ -53,6 +53,7 @@ class AccumulationServiceImpl @Inject() (dao: AccumulationDAO) extends Accumulat
         val month = cal.get(Calendar.MONTH) + 1
         val day = cal.get(Calendar.DAY_OF_MONTH)
         val accumulation = Accumulation(None, year, month, day, 0L, mantraId, userId, gatheringId)
+        println("Saving " + accumulation)
         dao.save(accumulation)
     }
   }
